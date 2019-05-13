@@ -29,7 +29,7 @@ public class Varaus { //Varaus
 		return varattu_pvm;
 	}
 	public int getVahvistusPvm() {
-		return vahvistus_pvm;;
+		return vahvistus_pvm;
 	}
 	public int getVarattuAlkuPvm() {
 		return varattu_alkupvm;
