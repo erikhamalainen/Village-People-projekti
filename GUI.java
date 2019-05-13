@@ -437,7 +437,7 @@ public class GUI extends JFrame {
         // establishing a connection to the db, "driver:databasesystem://ip:port/database","user","password"
         conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","!Tyyny12345!");
+            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","");
     
         }catch (Exception e) {
             System.out.println(e);
@@ -690,9 +690,9 @@ public class GUI extends JFrame {
 		// lisätään tietokantaan asiakas
 		//System.out.println("Lisataan...");
 		boolean toimipiste_lisatty = true;
-		m_toimipiste = null;
+		m_asiakas = null;
 		try {
-			m_toimipiste = Toimipiste.haeToimipiste (conn, Integer.parseInt(txtToimipisteID2.getText()));
+			m_asiakas = Asiakas.haeToimipiste (conn, Integer.parseInt(txtToimipisteID2.getText()));
 		} catch (SQLException se) {
 		// SQL virheet
 			toimipiste_lisatty = false;
@@ -702,30 +702,30 @@ public class GUI extends JFrame {
 			toimipiste_lisatty = false;
 			JOptionPane.showMessageDialog(null, "Tietokantavirhe.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
 		}
-		if (m_toimipiste.getNimi() != null) {
+		if (m_asiakas.getNimi() != null) {
 		// asiakas jo olemassa, näytetään tiedot
 			toimipiste_lisatty = false;
-			txtNimi2.setText(m_toimipiste.getNimi());
-			txtLahiosoite2.setText(m_toimipiste.getTLahiosoite());
-			txtPostinro2.setText(m_toimipiste.getTPostinro());
-			txtPostitoimipaikka2.setText(m_toimipiste.getTPostitoimipaikka());
-			txtEmail2.setText(m_toimipiste.getTEmail());
-			txtPuhelinnro2.setText(m_toimipiste.getTPuhelinnro());
+			txtNimi2.setText(m_asiakas.getNimi());
+			txtLahiosoite2.setText(m_asiakas.getTLahiosoite());
+			txtPostinro2.setText(m_asiakas.getTPostinro());
+			txtPostitoimipaikka2.setText(m_asiakas.getTPostitoimipaikka());
+			txtEmail2.setText(m_asiakas.getTEmail());
+			txtPuhelinnro2.setText(m_asiakas.getTPuhelinnro());
 			JOptionPane.showMessageDialog(null, "Toimipiste on jo olemassa.", "Virhe", JOptionPane.ERROR_MESSAGE);
 		}
 		else
 		{
 			// asetetaan tiedot oliolle
-			m_toimipiste.setToimipisteId(Integer.parseInt(txtToimipisteID2.getText()));
-			m_toimipiste.setNimi(txtNimi2.getText());
-			m_toimipiste.setTLahiosoite(txtLahiosoite2.getText());
-			m_toimipiste.setTPostinro(txtPostinro2.getText());
-			m_toimipiste.setTPostitoimipaikka(txtPostitoimipaikka2.getText());
-			m_toimipiste.setTEmail(txtEmail2.getText());
-			m_toimipiste.setTPuhelinnro(txtPuhelinnro2.getText());
+			m_asiakas.setToimipisteId(Integer.parseInt(txtToimipisteID2.getText()));
+			m_asiakas.setNimi(txtNimi2.getText());
+			m_asiakas.setTLahiosoite(txtLahiosoite2.getText());
+			m_asiakas.setTPostinro(txtPostinro2.getText());
+			m_asiakas.setTPostitoimipaikka(txtPostitoimipaikka2.getText());
+			m_asiakas.setTEmail(txtEmail2.getText());
+			m_asiakas.setTPuhelinnro(txtPuhelinnro2.getText());
 			try {
 				// yritetään kirjoittaa kantaan
-				m_toimipiste.lisaaToimipiste (conn);
+				m_asiakas.lisaaToimipiste (conn);
 			} catch (SQLException se) {
 			// SQL virheet
 				toimipiste_lisatty = false;
