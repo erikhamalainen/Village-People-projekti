@@ -262,14 +262,34 @@ public class GUI extends JFrame {
         btnHae4 = new JButton("Hae");
         btnPoista4 = new JButton("Poista");
 
-        //Action listeners
-        btnExit.addActionListener(new ActionListener(){
-        
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        //labels for lasku
+        lblLaskuID5 = new JLabel("Lasku id");
+        lblVarausID5 = new JLabel("Varaus id");
+        lblAsiakasID5 = new JLabel("Asiakas id");
+        lblNimi5 = new JLabel("Nimi");
+        lblLahiosoite5 = new JLabel("Lahiosoite");
+        lblPostitoimipaikka5 = new JLabel("Postitoimipaikka");
+        lblPostinro5 = new JLabel("Postinumero");
+        lblSumma5 = new JLabel("Summa");
+        lblAlv5 = new JLabel("Alv");
+
+        //textfields for lasku
+        txtLaskuID5 = new JTextField(25);
+        txtVarausID5 = new JTextField(25);
+        txtAsiakasID5 = new JTextField(25);
+        txtNimi5 = new JTextField(25);
+        txtLahiosoite5 = new JTextField(25);
+        txtPostitoimipaikka5 = new JTextField(25);
+        txtPostinro5 = new JTextField(25);
+        txtSumma5 = new JTextField(25);
+        txtAlv5 = new JTextField(25);
+
+        //buttons for lasku
+        btnLisaa5 = new JButton("Lisaa");
+        btnMuuta5 = new JButton("Muuta");
+        btnHae5 = new JButton("Hae");
+        btnPoista5 = new JButton("Poista");
+
 
         frame.add(pnlMain);
 
@@ -375,6 +395,34 @@ public class GUI extends JFrame {
         pnl4.add(lblLoppupvm4);
         pnl4.add(txtLoppupvm4);
 
+        pnl5.setLayout(new GridLayout(9, 2));
+        pnl5.add(lblLaskuID5);
+        pnl5.add(txtLaskuID5);
+        pnl5.add(btnLisaa5);
+        pnl5.add(lblVarausID5);
+        pnl5.add(txtVarausID5);
+        pnl5.add(btnMuuta5);
+        pnl5.add(lblAsiakasID5);
+        pnl5.add(txtAsiakasID5);
+        pnl5.add(btnHae5);
+        pnl5.add(lblNimi5);
+        pnl5.add(txtNimi5);
+        pnl5.add(btnPoista5);
+        pnl5.add(lblLahiosoite5);
+        pnl5.add(txtLahiosoite5);
+        pnl5.add(Box.createRigidArea(new Dimension(100,10)));
+        pnl5.add(lblPostitoimipaikka5);
+        pnl5.add(txtPostitoimipaikka5);
+        pnl5.add(Box.createRigidArea(new Dimension(100,10)));
+        pnl5.add(lblPostinro5);
+        pnl5.add(txtPostinro5);
+        pnl5.add(Box.createRigidArea(new Dimension(100,10)));
+        pnl5.add(lblSumma5);
+        pnl5.add(txtSumma5);
+        pnl5.add(Box.createRigidArea(new Dimension(100,10)));
+        pnl5.add(lblAlv5);
+        pnl5.add(txtAlv5);
+
         pnl7.add(btnExit);
 
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
@@ -383,6 +431,185 @@ public class GUI extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     
+        // establishing a connection to the db, "driver:databasesystem://ip:port/database","user","password"
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","juuressa");
+    
+        }catch (Exception e) {
+            System.out.println(e);
+        }finally {
+            System.out.println("Yhteys luotu!");
+        }
+
+        //action listeners
+        btnLisaa1.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                lisaaAsiakas();
+            }
+        });
+
+        btnMuuta1.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnHae1.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnPoista1.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnLisaa2.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnMuuta2.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnHae2.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnPoista2.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnLisaa3.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnMuuta3.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnHae3.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnPoista3.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnLisaa4.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnMuuta4.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnHae4.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnPoista4.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnLisaa5.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnMuuta5.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnHae5.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnPoista5.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+
+        btnExit.addActionListener(new ActionListener(){
+    
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
     }
 
     public static void main (String[] args){
