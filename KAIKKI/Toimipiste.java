@@ -139,9 +139,9 @@ public class Toimipiste {
                     throw e;
 		}
 		// parsitaan INSERT
-		sql = "INSERT INTO Toimipiste "
+		sql = "INSERT INTO toimipiste "
 		+ "(toimipiste_id, nimi, lahiosoite, postitoimipaikka, postinro, email, puhelinnro) "
-		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		+ " VALUES (?, ?, ?, ?, ?, ?, ?)";
 		// System.out.println("Lisataan " + sql);
 		lause = null;
 		try {
