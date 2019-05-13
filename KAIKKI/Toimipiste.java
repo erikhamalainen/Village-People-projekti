@@ -117,7 +117,7 @@ public class Toimipiste {
 	*/
      public int lisaaToimipiste (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
 		// haetaan tietokannasta asiakasta, jonka asiakas_id = olion id -> ei voi lisätä, jos on jo kannassa
-		String sql = "SELECT toimpiste_id" 
+		String sql = "SELECT toimipiste_id" 
 					+ " FROM Toimipiste WHERE toimipiste_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
 		PreparedStatement lause = null; 
@@ -139,7 +139,7 @@ public class Toimipiste {
                     throw e;
 		}
 		// parsitaan INSERT
-		sql = "INSERT INTO toimipiste "
+		sql = "INSERT INTO Toimipiste "
 		+ "(toimipiste_id, nimi, lahiosoite, postitoimipaikka, postinro, email, puhelinnro) "
 		+ " VALUES (?, ?, ?, ?, ?, ?, ?)";
 		// System.out.println("Lisataan " + sql);
