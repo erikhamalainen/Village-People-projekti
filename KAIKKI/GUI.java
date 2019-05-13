@@ -8,6 +8,7 @@ public class GUI extends JFrame {
 
     private Asiakas m_asiakas = new Asiakas();
     private Toimipiste m_toimipiste = new Toimipiste();
+    private Palvelu m_palvelu = new Palvelu();
     //GUI container
     private JPanel pnlContainer;
 
@@ -437,7 +438,7 @@ public class GUI extends JFrame {
         // establishing a connection to the db, "driver:databasesystem://ip:port/database","user","password"
         conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","salasana tahan");
+            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","salasana123");
     
         }catch (Exception e) {
             System.out.println(e);
@@ -514,7 +515,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                lisaa_palvelu();
             }
         });
 
@@ -522,7 +523,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                muuta_palvelu();
             }
         });
 
@@ -530,7 +531,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                hae_palvelu();
             }
         });
 
@@ -538,7 +539,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                poista_palvelu();
             }
         });
 
@@ -742,6 +743,210 @@ public class GUI extends JFrame {
 			}
 		
 		}
+		
+    }
+    
+
+
+
+
+
+    	/*
+	Haetaan tietokannasta palvelu palvelu_id:n perusteella
+	*/
+	public  void hae_palvelu() {
+		// haetaan tietokannasta pavlelua, jonka palvelu_id = txtPalveluID3
+		m_palvelu = null;
+		
+		try {
+			m_palvelu = Palvelu.haePalvelu(conn, Integer.parseInt(txtPalveluID3.getText()));
+
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Palvelua ei loydy. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Palvelua ei loydy. GUI " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_palvelu.getPalvelu_id() == 0) {
+        // muut virheet
+            txtPalveluID3.setText("");
+			txtToimipisteID3.setText("");
+			txtNimi3.setText("");
+			txtTyyppi3.setText("");
+			txtKuvaus3.setText("");
+            txtHinta3.setText("");
+            txtAlv3.setText("");
+			JOptionPane.showMessageDialog(null, "Palvelua ei loydy. GUI", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+            // naytetaan tiedot
+            
+			txtPalveluID3.setText(m_palvelu.getPalvelu_id() + "");
+			txtToimipisteID3.setText(m_palvelu.getToimipiste_id() + "");
+			txtNimi3.setText(m_palvelu.getNimi());
+			txtTyyppi3.setText(m_palvelu.getTyyppi() + "");
+			txtKuvaus3.setText(m_palvelu.getKuvaus());
+            txtHinta3.setText(m_palvelu.getHinta() + "");
+            txtAlv3.setText(m_palvelu.getAlv() + "");
+		}
+		
+	}
+
+
+
+    public  void lisaa_palvelu() {
+		// lisätään tietokantaan palvelu
+		boolean palvelu_lisatty = true;
+		m_palvelu = null;
+		try {
+			m_palvelu = Palvelu.haePalvelu (conn, Integer.parseInt(txtPalveluID3.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			palvelu_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe. " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+            palvelu_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe. "+ e, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_palvelu.getPalvelu_id() != 0) {
+		// palvelu jo olemassa, näytetään tiedot
+			palvelu_lisatty = false;
+			txtPalveluID3.setText(m_palvelu.getPalvelu_id() + "");
+			txtToimipisteID3.setText(m_palvelu.getToimipiste_id() + "");
+			txtNimi3.setText(m_palvelu.getNimi());
+			txtTyyppi3.setText(m_palvelu.getTyyppi() + "");
+			txtKuvaus3.setText(m_palvelu.getKuvaus());
+            txtHinta3.setText(m_palvelu.getHinta() + "");
+            txtAlv3.setText(m_palvelu.getAlv() + "");
+			JOptionPane.showMessageDialog(null, "Toimipiste on jo olemassa.", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+			// asetetaan tiedot oliolle
+			m_palvelu.setPalvelu_id(Integer.parseInt(txtPalveluID3.getText()));
+			m_palvelu.setToimipiste_id(Integer.parseInt(txtToimipisteID3.getText()));
+			m_palvelu.setNimi(txtNimi3.getText());
+			m_palvelu.setTyyppi(Integer.parseInt(txtTyyppi3.getText()));
+			m_palvelu.setKuvaus(txtKuvaus3.getText());
+			m_palvelu.setHinta(Double.parseDouble(txtHinta3.getText()));
+			m_palvelu.setAlv(Double.parseDouble(txtAlv3.getText()));
+			try {
+				// yritetään kirjoittaa kantaan
+				m_palvelu.lisaaPalvelu (conn);
+			} catch (SQLException se) {
+			// SQL virheet
+				palvelu_lisatty = false;
+				JOptionPane.showMessageDialog(null, "Palvelun lisaaminen ei onnistu " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+			//	 se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+                palvelu_lisatty = false;
+				JOptionPane.showMessageDialog(null, "Palvelun lisaaminen ei onnistu. " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+			//	 e.printStackTrace();
+			}finally {
+				if (palvelu_lisatty == true)
+					JOptionPane.showMessageDialog(null, "Palvelun tiedot lisatty tietokantaan.");
+			}
+		
+		}
+		
+    }
+    
+
+    public  void muuta_palvelu() {
+		//System.out.println("Muutetaan...");
+			boolean palvelu_muutettu = false;
+		// asetetaan tiedot oliolle
+		m_palvelu.setNimi(txtNimi3.getText());
+		m_palvelu.setTyyppi(Integer.parseInt(txtTyyppi3.getText()));
+		m_palvelu.setHinta(Double.parseDouble(txtHinta3.getText()));
+		m_palvelu.setAlv(Double.parseDouble(txtAlv3.getText()));
+			
+			try {
+				// yritetään muuttaa (UPDATE) tiedot kantaan
+				m_palvelu.muutaPalvelu(conn);
+				palvelu_muutettu = true;
+			} catch (SQLException se) {
+			// SQL virheet
+				JOptionPane.showMessageDialog(null, "Palvelun tietojen muuttaminen ei onnistu. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				 //se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				JOptionPane.showMessageDialog(null, "Palvelun tietojen muuttaminen ei onnistu. GUI " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (palvelu_muutettu == true)
+					JOptionPane.showMessageDialog(null, "Palvelun tiedot muutettu.");
+			}
+		
+    }
+    
+    public  void poista_palvelu() {
+		// haetaan tietokannasta palvelua, jonka palvelu_id = txtPalveluID3 
+		m_palvelu = null;
+		boolean palvelu_poistettu = false;
+		
+		try {
+			m_palvelu = Palvelu.haePalvelu(conn, Integer.parseInt(txtPalveluID3.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Palvelua ei loydy. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Palvelua ei loydy. GUI " + e, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_palvelu.getPalvelu_id() == 0) {
+        // poistettavaa palvelua ei löydy tietokannasta, tyhjennetään tiedot näytöltä
+            txtPalveluID3.setText("");
+            txtToimipisteID3.setText("");
+            txtNimi3.setText("");
+            txtTyyppi3.setText("");
+            txtKuvaus3.setText("");
+            txtHinta3.setText("");
+            txtAlv3.setText("");
+			JOptionPane.showMessageDialog(null, "Palvelua ei loydy. GUI", "Virhe", JOptionPane.ERROR_MESSAGE);
+			return; // poistutaan
+		}
+		else
+		{
+			// naytetaan poistettavan opintosuorituksen tiedot
+			m_palvelu.setPalvelu_id(Integer.parseInt(txtPalveluID3.getText()));
+            txtToimipisteID3.setText( "" + m_palvelu.getToimipiste_id());
+            txtNimi3.setText(m_palvelu.getNimi());
+            txtTyyppi3.setText( "" + m_palvelu.getTyyppi());
+            txtKuvaus3.setText(m_palvelu.getKuvaus());
+            txtHinta3.setText( "" + m_palvelu.getHinta());
+            txtAlv3.setText( "" + m_palvelu.getAlv());
+		}
+		try {
+			if (JOptionPane.showConfirmDialog(null, "Haluatko todella poistaa palvelun?")==0) {// vahvistus ikkunassa
+				m_palvelu.poistaPalvelu(conn);
+				palvelu_poistettu = true;
+			}
+			} catch (SQLException se) {
+			// SQL virheet
+				JOptionPane.showMessageDialog(null, "Palvelun tietojen poistaminen ei onnistu. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				// se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				JOptionPane.showMessageDialog(null, "Palvelun tietojen poistaminen ei onnistu. GUI " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (palvelu_poistettu == true) { // ainoastaan, jos vahvistettiin ja poisto onnistui
+                    txtPalveluID3.setText("");
+                    txtToimipisteID3.setText("");
+                    txtNimi3.setText("");
+                    txtTyyppi3.setText("");
+                    txtKuvaus3.setText("");
+                    txtHinta3.setText("");
+                    txtAlv3.setText("");
+					JOptionPane.showMessageDialog(null, "Palvelun tiedot poistettu tietokannasta.");
+				}
+			}
+			
 		
 	}
 
