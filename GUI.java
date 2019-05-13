@@ -4,6 +4,9 @@ import java.awt.event.*;
 import java.sql.*;
 
 public class GUI extends JFrame {
+    private Connection conn;
+
+    private Asiakas m_asiakas = new Asiakas();
 
     //GUI container
     private JPanel pnlContainer;
@@ -432,7 +435,7 @@ public class GUI extends JFrame {
         frame.setVisible(true);
     
         // establishing a connection to the db, "driver:databasesystem://ip:port/database","user","password"
-        Connection conn = null;
+        conn = null;
         try {
             conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","juuressa");
     
@@ -447,7 +450,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                lisaaAsiakas();
+                lisaa_tiedot();
             }
         });
 
@@ -611,6 +614,67 @@ public class GUI extends JFrame {
             }
         });
     }
+
+    public  void lisaa_tiedot() {
+		// lisätään tietokantaan asiakas
+		//System.out.println("Lisataan...");
+		boolean asiakas_lisatty = true;
+		m_asiakas = null;
+		try {
+			m_asiakas = Asiakas.haeAsiakas (conn, Integer.parseInt(txtAsiakasID1.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			asiakas_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			asiakas_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_asiakas.getEtunimi() != null) {
+		// asiakas jo olemassa, näytetään tiedot
+			asiakas_lisatty = false;
+			txtEtunimi1.setText(m_asiakas.getEtunimi());
+			txtSukunimi1.setText(m_asiakas.getSukunimi());
+			txtLahiosoite1.setText(m_asiakas.getLahiosoite());
+			txtPostinro1.setText(m_asiakas.getPostinro());
+			txtPostitoimipaikka1.setText(m_asiakas.getPostitoimipaikka());
+			txtEmail1.setText(m_asiakas.getEmail());
+			txtPuhelinnro1.setText(m_asiakas.getPuhelinnro());
+			JOptionPane.showMessageDialog(null, "Asiakas on jo olemassa.", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+			// asetetaan tiedot oliolle
+			m_asiakas.setAsiakasId(Integer.parseInt(txtAsiakasID1.getText()));
+			m_asiakas.setEtunimi(txtEtunimi1.getText());
+			m_asiakas.setSukunimi(txtSukunimi1.getText());
+			m_asiakas.setLahiosoite(txtLahiosoite1.getText());
+			m_asiakas.setPostinro(txtPostinro1.getText());
+			m_asiakas.setPostitoimipaikka(txtPostitoimipaikka1.getText());
+			m_asiakas.setEmail(txtEmail1.getText());
+			m_asiakas.setPuhelinnro(txtPuhelinnro1.getText());
+			try {
+				// yritetään kirjoittaa kantaan
+				m_asiakas.lisaaAsiakas (conn);
+			} catch (SQLException se) {
+			// SQL virheet
+				asiakas_lisatty = false;
+				JOptionPane.showMessageDialog(null, "Asiakkaan lisaaminen ei onnistu.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+			//	 se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				asiakas_lisatty = false;
+				JOptionPane.showMessageDialog(null, "Asiakkaan lisaaminen ei onnistu.", "Virhe", JOptionPane.ERROR_MESSAGE);
+			//	 e.printStackTrace();
+			}finally {
+				if (asiakas_lisatty == true)
+					JOptionPane.showMessageDialog(null, "Asiakkaan tiedot lisatty tietokantaan.");
+			}
+		
+		}
+		
+	}
 
     public static void main (String[] args){
         GUI instance = new GUI();
