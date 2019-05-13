@@ -1,6 +1,6 @@
 import java.sql.*;
 import java.lang.*;
-public class Toimipiste {
+public class Toimipiste {,
 	
 	// attribuutit, vastaavat tietokantataulun sarakkeita
     private int m_toimipiste_id;
