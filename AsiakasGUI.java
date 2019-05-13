@@ -191,7 +191,7 @@ public class AsiakasGUI extends JFrame {
 		String url = "jdbc:mariadb://localhost:3306/vp"; // palvelin = localhost, :portti annettu asennettaessa, tietokannan nimi
 		try {
 			// ota yhteys kantaan, kayttaja = root, salasana = root
-			m_conn=DriverManager.getConnection(url,"root","root");
+			m_conn=DriverManager.getConnection(url,"root","!Tyyny12345!");
 		}
 		catch (SQLException e) { // tietokantaan ei saada yhteyttä
 			m_conn = null;

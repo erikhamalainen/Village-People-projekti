@@ -138,7 +138,7 @@ public class Asiakas {
 		String sql = "SELECT asiakas_id" 
 					+ " FROM Asiakas WHERE asiakas_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
-		PreparedStatement lause = null; 
+		PreparedStatement lause = null;
 		
 		try {
 			// luo PreparedStatement-olio sql-lauseelle

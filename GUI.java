@@ -7,7 +7,7 @@ public class GUI extends JFrame {
     private Connection conn;
 
     private Asiakas m_asiakas = new Asiakas();
-
+    private Toimipiste m_toimipiste = new Toimipiste();
     //GUI container
     private JPanel pnlContainer;
 
@@ -437,7 +437,7 @@ public class GUI extends JFrame {
         // establishing a connection to the db, "driver:databasesystem://ip:port/database","user","password"
         conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","juuressa");
+            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","!Tyyny12345!");
     
         }catch (Exception e) {
             System.out.println(e);
@@ -482,7 +482,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                lisaa_toimipiste();
             }
         });
 
@@ -674,7 +674,77 @@ public class GUI extends JFrame {
 		
 		}
 		
+    }
+    
+
+   
+   
+   
+   
+   
+
+    //toimipisteosio
+   
+   
+    public  void lisaa_toimipiste() {
+		// lisätään tietokantaan asiakas
+		//System.out.println("Lisataan...");
+		boolean toimipiste_lisatty = true;
+		m_toimipiste = null;
+		try {
+			m_toimipiste = Toimipiste.haeToimipiste (conn, Integer.parseInt(txtToimipisteID2.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			toimipiste_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			toimipiste_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_toimipiste.getNimi() != null) {
+		// asiakas jo olemassa, näytetään tiedot
+			toimipiste_lisatty = false;
+			txtNimi2.setText(m_toimipiste.getNimi());
+			txtLahiosoite2.setText(m_toimipiste.getTLahiosoite());
+			txtPostinro2.setText(m_toimipiste.getTPostinro());
+			txtPostitoimipaikka2.setText(m_toimipiste.getTPostitoimipaikka());
+			txtEmail2.setText(m_toimipiste.getTEmail());
+			txtPuhelinnro2.setText(m_toimipiste.getTPuhelinnro());
+			JOptionPane.showMessageDialog(null, "Toimipiste on jo olemassa.", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+			// asetetaan tiedot oliolle
+			m_toimipiste.setToimipisteId(Integer.parseInt(txtToimipisteID2.getText()));
+			m_toimipiste.setNimi(txtNimi2.getText());
+			m_toimipiste.setTLahiosoite(txtLahiosoite2.getText());
+			m_toimipiste.setTPostinro(txtPostinro2.getText());
+			m_toimipiste.setTPostitoimipaikka(txtPostitoimipaikka2.getText());
+			m_toimipiste.setTEmail(txtEmail2.getText());
+			m_toimipiste.setTPuhelinnro(txtPuhelinnro2.getText());
+			try {
+				// yritetään kirjoittaa kantaan
+				m_toimipiste.lisaaToimipiste (conn);
+			} catch (SQLException se) {
+			// SQL virheet
+				toimipiste_lisatty = false;
+				JOptionPane.showMessageDialog(null, "Toimipisteen lisaaminen ei onnistu", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+			//	 se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				toimipiste_lisatty = false;
+				JOptionPane.showMessageDialog(null, "Toimipisteen lisaaminen ei onnistu.", "Virhe", JOptionPane.ERROR_MESSAGE);
+			//	 e.printStackTrace();
+			}finally {
+				if (toimipiste_lisatty == true)
+					JOptionPane.showMessageDialog(null, "Toimipisteen tiedot lisatty tietokantaan.");
+			}
+		
+		}
+		
 	}
+
 
     public static void main (String[] args){
         GUI instance = new GUI();
