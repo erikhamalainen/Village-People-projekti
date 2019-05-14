@@ -438,7 +438,7 @@ public class GUI extends JFrame {
         // establishing a connection to the db, "driver:databasesystem://ip:port/database","user","password"
         conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","!Tyyny12345!");
+            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","");
     
         }catch (Exception e) {
             System.out.println(e);
