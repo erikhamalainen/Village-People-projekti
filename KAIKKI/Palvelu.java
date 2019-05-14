@@ -20,7 +20,7 @@ public class Palvelu { // Luodaan palvelu-luokka
     public int getToimipiste_id() {
         return toimipiste_id;
     }
-    public String getPNimi() {
+    public String getNimi() {
         return nimi;
     }
     public int getTyyppi() {
@@ -42,7 +42,7 @@ public class Palvelu { // Luodaan palvelu-luokka
     public void setToimipiste_id (int tid) {
         toimipiste_id = tid;
     }
-    public void setPNimi (String n) {
+    public void setNimi (String n) {
         nimi = n;
     }
     public void setTyyppi (int t) {
@@ -93,7 +93,7 @@ public class Palvelu { // Luodaan palvelu-luokka
                 //palvelu_id, toimipiste_id, nimi, tyyppi, kuvaus, hinta, alv
                 palveluOlio.setPalvelu_id (tulosjoukko.getInt("palvelu_id"));
 				palveluOlio.setToimipiste_id (tulosjoukko.getInt("toimipiste_id"));
-				palveluOlio.setPNimi (tulosjoukko.getString("nimi"));
+				palveluOlio.setNimi (tulosjoukko.getString("nimi"));
 				palveluOlio.setTyyppi (tulosjoukko.getInt("tyyppi"));
 				palveluOlio.setKuvaus (tulosjoukko.getString("kuvaus"));
 				palveluOlio.setHinta (tulosjoukko.getDouble("hinta"));
@@ -148,7 +148,7 @@ public class Palvelu { // Luodaan palvelu-luokka
 			// laitetaan arvot INSERTtiin
 			lause.setInt( 1, getPalvelu_id());
 			lause.setInt(2, getToimipiste_id()); 
-			lause.setString(3, getPNimi());
+			lause.setString(3, getNimi());
 			lause.setInt(4, getTyyppi());
 			lause.setString(5, getKuvaus());
 			lause.setDouble(6, getHinta());
@@ -202,7 +202,7 @@ public class Palvelu { // Luodaan palvelu-luokka
 			lause = connection.prepareStatement(sql);
 			
 			// laitetaan olion attribuuttien arvot UPDATEen
-			lause.setString(1, getPNimi());
+			lause.setString(1, getNimi());
 			lause.setInt(2, getTyyppi());
 			lause.setString(3, getKuvaus());
 			lause.setDouble(4, getHinta());
