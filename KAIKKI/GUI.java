@@ -685,7 +685,45 @@ public class GUI extends JFrame {
    
 
     //toimipisteosio
-   
+    public  void hae_toimipiste() {
+		// haetaan tietokannasta pavlelua, jonka palvelu_id = txtPalveluID3
+		m_toimipiste = null;
+		
+		try {
+			m_toimipiste = Toimipiste.haeToimipiste(conn, Integer.parseInt(txtToimipisteID2.getText()));
+
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Toimipistett ei loydy. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Toimipistetta ei loydy. GUI " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_toimipiste.getToimipisteId() == 0) {
+        // muut virheet
+            txtToimipisteID2.setText("");
+            txtNimi2.setText("");
+            txtLahiosoite2.setText(m_toimipiste.getTLahiosoite());
+			txtPostinro2.setText(m_toimipiste.getTPostinro());
+			txtPostitoimipaikka2.setText(m_toimipiste.getTPostitoimipaikka());
+			txtEmail2.setText(m_toimipiste.getTEmail());
+			txtPuhelinnro2.setText(m_toimipiste.getTPuhelinnro());
+			JOptionPane.showMessageDialog(null, "Toimipistetta ei loydy. GUI", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+            // naytetaan tiedot
+            
+			m_toimipiste.setToimipisteId(Integer.parseInt(txtToimipisteID2.getText()));
+			m_toimipiste.setNimi(txtNimi2.getText());
+			m_toimipiste.setTLahiosoite(txtLahiosoite2.getText());
+			m_toimipiste.setTPostinro(txtPostinro2.getText());
+			m_toimipiste.setTPostitoimipaikka(txtPostitoimipaikka2.getText());
+			m_toimipiste.setTEmail(txtEmail2.getText());
+			m_toimipiste.setTPuhelinnro(txtPuhelinnro2.getText());
+		}
+		
+	}
    
     public  void lisaa_toimipiste() {
 		// lisätään tietokantaan asiakas
