@@ -1,13 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
-/**
- *
- * @author MonkkonenE
- */
 import java.sql.*;
 import java.lang.*;
 public class Lasku {
@@ -87,7 +78,7 @@ public class Lasku {
         return (m_asiakas_id + " " + m_etunimi + " " + m_sukunimi);
     }
 	/*
-	Haetaan asiakkaan tiedot ja palautetaan asiakasolio kutsujalle.
+	Haetaan asiakkaan tiedot ja palautetaan laskuolion kutsujalle.
 	Staattinen metodi, ei vaadi fyysisen olion olemassaoloa.
 	*/
 	public static Lasku haeLasku (Connection connection, int id) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
@@ -117,7 +108,7 @@ public class Lasku {
 		
 		try {
 			if (tulosjoukko.next () == true){
-				//asiakas_id, etunimi, sukunimi, lahiosoite, postitoimipaikka, postinro, email, puhelinnro
+				//lasku_id, varaus_id, asiakas_id, nimi, lahiosoite, postitoimipaikka, postinro, summa, al
 				laskuOlio.setLaskuId  (tulosjoukko.getInt("lasku_id"));
 				laskuOlio.setVarausId (tulosjoukko.getInt("varaus_id"));
 				laskuOlio.setAsiakasId (tulosjoukko.getInt("asiakas_id"));
@@ -132,16 +123,16 @@ public class Lasku {
 		}catch (SQLException e) {
 			throw e;
 		}
-		// palautetaan asiakasolio
+		// palautetaan laskuolio
 		
 		return laskuOlio;
 	}
 	/*
-	Lisätään asiakkaan tiedot tietokantaan.
-	Metodissa "asiakasolio kirjoittaa tietonsa tietokantaan".
+	Lisätään laskun tiedot tietokantaan.
+	Metodissa "laskuolio kirjoittaa tietonsa tietokantaan".
 	*/
      public int lisaaLasku (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
-		// haetaan tietokannasta asiakasta, jonka asiakas_id = olion id -> ei voi lisätä, jos on jo kannassa
+		// haetaan tietokannasta asiakasta, jonka lasku_id = olion id -> ei voi lisätä, jos on jo kannassa
 		String sql = "SELECT lasku_id" 
 					+ " FROM Lasku WHERE lasku_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
@@ -198,8 +189,8 @@ public class Lasku {
 		return 0;
 	}
 	/*
-	Muutetaan asiakkaan tiedot tietokantaan id-tietoa (avain) lukuunottamatta. 
-	Metodissa "asiakasolio muuttaa tietonsa tietokantaan".
+	Muutetaan laskun tiedot tietokantaan id-tietoa (avain) lukuunottamatta. 
+	Metodissa "laskuolio muuttaa tietonsa tietokantaan".
 	*/
     public int muutaLasku (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
 		// haetaan tietokannasta asiakasta, jonka asiakas_id = olion id, virhe, jos ei löydy
@@ -213,7 +204,7 @@ public class Lasku {
 			lause.setInt( 1, getLaskuId()); // asetetaan where ehtoon (?) arvo
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
-			if (tulosjoukko.next () == false) { // asiakasta ei löytynyt
+			if (tulosjoukko.next () == false) { // laskua ei löytynyt
 				throw new Exception("Laskua ei loydy tietokannasta");
 			}
 		} catch (SQLException se) {
@@ -261,8 +252,8 @@ public class Lasku {
 		return 0; // toiminto ok
 	}
 	/*
-	Poistetaan asiakkaan tiedot tietokannasta. 
-	Metodissa "asiakasolio poistaa tietonsa tietokannasta".
+	Poistetaan laskun tiedot tietokannasta. 
+	Metodissa "laskusolio poistaa tietonsa tietokannasta".
 	*/
 	public int poistaLasku (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
 		

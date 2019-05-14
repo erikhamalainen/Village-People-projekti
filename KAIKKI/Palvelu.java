@@ -123,10 +123,10 @@ public class Palvelu { // Luodaan palvelu-luokka
 		try {
 			// luo PreparedStatement-olio sql-lauseelle
 			lause = connection.prepareStatement(sql);
-			lause.setInt( 1, getPalvelu_id()); // asetetaan where ehtoon (?) arvo, olion asiakasid
+			lause.setInt( 1, getPalvelu_id()); // asetetaan where ehtoon (?) arvo, olion palveluid
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
-			if (tulosjoukko.next () == true) { // asiakas loytyi
+			if (tulosjoukko.next () == true) { // palvelu loytyi
 				throw new Exception("Palvelu on jo olemassa");
 			}
 		} catch (SQLException se) {
@@ -181,7 +181,7 @@ public class Palvelu { // Luodaan palvelu-luokka
 			lause.setInt( 1, getPalvelu_id()); // asetetaan where ehtoon (?) arvo
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
-			if (tulosjoukko.next () == false) { // asiakasta ei löytynyt
+			if (tulosjoukko.next () == false) { // palvelua ei löytynyt
 				throw new Exception("Palvelua ei loydy tietokannasta.");
 			}
 		} catch (SQLException se) {

@@ -64,11 +64,11 @@ public class Toimipiste {
         return (m_toimipiste_id + " " + m_nimi);
     }
 	/*
-	Haetaan asiakkaan tiedot ja palautetaan asiakasolio kutsujalle.
+	Haetaan asiakkaan tiedot ja palautetaan toimipisteolijolle kutsujalle.
 	Staattinen metodi, ei vaadi fyysisen olion olemassaoloa.
 	*/
 	public static Toimipiste haeToimipiste (Connection connection, int id) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
-		// haetaan tietokannasta asiakasta, jonka asiakas_id = id 
+		// haetaan tietokannasta asiakasta, jonka toimipiste_id = id 
 		String sql = "SELECT toimipiste_id, nimi, lahiosoite, postitoimipaikka, postinro, email, puhelinnro " 
 					+ " FROM Toimipiste WHERE toimipiste_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
@@ -89,7 +89,7 @@ public class Toimipiste {
             // JDBC virheet
                         throw e;
 		}
-		// käsitellään resultset - laitetaan tiedot asiakasoliolle
+		// käsitellään resultset - laitetaan tiedot toimipisteolijolle
 		Toimipiste toimipisteOlio = new Toimipiste ();
 		
 		try {
@@ -107,16 +107,16 @@ public class Toimipiste {
 		}catch (SQLException e) {
 			throw e;
 		}
-		// palautetaan asiakasolio
+		// palautetaan toimipisteolio
 		
 		return toimipisteOlio;
 	}
 	/*
 	Lisätään asiakkaan tiedot tietokantaan.
-	Metodissa "asiakasolio kirjoittaa tietonsa tietokantaan".
+	Metodissa "toimipisteolio kirjoittaa tietonsa tietokantaan".
 	*/
      public int lisaaToimipiste (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
-		// haetaan tietokannasta asiakasta, jonka asiakas_id = olion id -> ei voi lisätä, jos on jo kannassa
+		// haetaan tietokannasta asiakasta, jonka toimipiste_id = olion id -> ei voi lisätä, jos on jo kannassa
 		String sql = "SELECT toimipiste_id" 
 					+ " FROM Toimipiste WHERE toimipiste_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
@@ -172,10 +172,10 @@ public class Toimipiste {
 	}
 	/*
 	Muutetaan asiakkaan tiedot tietokantaan id-tietoa (avain) lukuunottamatta. 
-	Metodissa "asiakasolio muuttaa tietonsa tietokantaan".
+	Metodissa "toimipisteolio muuttaa tietonsa tietokantaan".
 	*/
     public int muutaToimipiste (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
-		// haetaan tietokannasta asiakasta, jonka asiakas_id = olion id, virhe, jos ei löydy
+		// haetaan tietokannasta toimipiste, jonka toimipiste_id = olion id, virhe, jos ei löydy
 		String sql = "SELECT toimipiste_id" 
 					+ " FROM Toimipiste WHERE toimipiste_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
@@ -186,7 +186,7 @@ public class Toimipiste {
 			lause.setInt( 1, getToimipisteId()); // asetetaan where ehtoon (?) arvo
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
-			if (tulosjoukko.next () == false) { // asiakasta ei löytynyt
+			if (tulosjoukko.next () == false) { // toimipiste ei löytynyt
 				throw new Exception("Toimipistetta ei loydy tietokannasta");
 			}
 		} catch (SQLException se) {
@@ -231,8 +231,8 @@ public class Toimipiste {
 		return 0; // toiminto ok
 	}
 	/*
-	Poistetaan asiakkaan tiedot tietokannasta. 
-	Metodissa "asiakasolio poistaa tietonsa tietokannasta".
+	Poistetaan toimipisteen tiedot tietokannasta. 
+	Metodissa "toimipisteolio poistaa tietonsa tietokannasta".
 	*/
 	public int poistaToimipiste (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
 		

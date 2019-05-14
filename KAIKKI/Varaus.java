@@ -1,13 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
-/**
- *
- * @author MonkkonenE
- */
 import java.sql.*;
 import java.lang.*;
 
@@ -99,12 +90,12 @@ import java.lang.*;
             // JDBC virheet
                         throw e;
 		}
-		// käsitellään resultset - laitetaan tiedot asiakasoliolle
+		// käsitellään resultset - laitetaan tiedot varausoliolle
 		Varaus varausOlio = new Varaus ();
 		
 		try {
 			if (tulosjoukko.next () == true){
-				//asiakas_id, etunimi, sukunimi, lahiosoite, postitoimipaikka, postinro, email, puhelinnro
+				//varaus_id, asiakas_id, toimipiste_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm,
 				varausOlio.setVarausId (tulosjoukko.getInt("varaus_id"));
 				varausOlio.setAsiakasId (tulosjoukko.getInt("asiakas_id"));
 				varausOlio.setToimipisteId(tulosjoukko.getInt("toimipiste_id"));
@@ -117,16 +108,16 @@ import java.lang.*;
 		}catch (SQLException e) {
 			throw e;
 		}
-		// palautetaan asiakasolio
+		// palautetaan varaussolio
 		
 		return varausOlio;
 	}
 	/*
 	Lisätään asiakkaan tiedot tietokantaan.
-	Metodissa "asiakasolio kirjoittaa tietonsa tietokantaan".
+	Metodissa "varaussolio kirjoittaa tietonsa tietokantaan".
 	*/
      public int lisaaVaraus (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
-		// haetaan tietokannasta asiakasta, jonka asiakas_id = olion id -> ei voi lisätä, jos on jo kannassa
+		// haetaan tietokannasta asiakasta, jonka varaus_id = olion id -> ei voi lisätä, jos on jo kannassa
 		String sql = "SELECT varaus_id" 
 					+ " FROM Varaus WHERE varaus_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
@@ -135,10 +126,10 @@ import java.lang.*;
 		try {
 			// luo PreparedStatement-olio sql-lauseelle
 			lause = connection.prepareStatement(sql);
-			lause.setInt( 1, getVarausId()); // asetetaan where ehtoon (?) arvo, olion asiakasid
+			lause.setInt( 1, getVarausId()); // asetetaan where ehtoon (?) arvo, olion varausid
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
-			if (tulosjoukko.next () == true) { // asiakas loytyi
+			if (tulosjoukko.next () == true) { // varausloytyi
 				throw new Exception("Varaus on jo olemassa");
 			}
 		} catch (SQLException se) {
@@ -182,11 +173,11 @@ try {
 return 0;
 }
 	/*
-	Muutetaan asiakkaan tiedot tietokantaan id-tietoa (avain) lukuunottamatta. 
-	Metodissa "asiakasolio muuttaa tietonsa tietokantaan".
+	Muutetaan varauksen tiedot tietokantaan id-tietoa (avain) lukuunottamatta. 
+	Metodissa "varaussolio muuttaa tietonsa tietokantaan".
 	*/
     public int muutaVaraus (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
-		// haetaan tietokannasta asiakasta, jonka asiakas_id = olion id, virhe, jos ei löydy
+		// haetaan tietokannasta varausta, jonka varaus_id = olion id, virhe, jos ei löydy
 		String sql = "SELECT varaus_id" 
 					+ " FROM Varaus WHERE varaus_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
@@ -197,7 +188,7 @@ return 0;
 			lause.setInt( 1, getVarausId()); // asetetaan where ehtoon (?) arvo
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
-			if (tulosjoukko.next () == false) { // asiakasta ei löytynyt
+			if (tulosjoukko.next () == false) { // varausta ei löytynyt
 				throw new Exception("Varausta ei loydy tietokannasta");
 			}
 		} catch (SQLException se) {
@@ -243,8 +234,8 @@ return 0;
 		return 0; // toiminto ok
 	}
 	/*
-	Poistetaan asiakkaan tiedot tietokannasta. 
-	Metodissa "asiakasolio poistaa tietonsa tietokannasta".
+	Poistetaan varauksen tiedot tietokannasta. 
+	Metodissa "varausolio poistaa tietonsa tietokannasta".
 	*/
 	public int poistaVaraus(Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
 		
