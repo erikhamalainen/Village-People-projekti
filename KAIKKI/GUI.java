@@ -438,7 +438,7 @@ public class GUI extends JFrame {
         // establishing a connection to the db, "driver:databasesystem://ip:port/database","user","password"
         conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","salasana123");
+            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","");
     
         }catch (Exception e) {
             System.out.println(e);
@@ -483,7 +483,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                lisaa_toimipiste();
+                lisaa_toimipiste();;
             }
         });
 
@@ -491,7 +491,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                muuta_toimipiste();
             }
         });
 
@@ -499,7 +499,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                hae_toimipiste();
             }
         });
 
@@ -507,7 +507,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                poista_toimipiste();
             }
         });
 
@@ -714,13 +714,13 @@ public class GUI extends JFrame {
 		{
             // naytetaan tiedot
             
-			m_toimipiste.setToimipisteId(Integer.parseInt(txtToimipisteID2.getText()));
-			m_toimipiste.setNimi(txtNimi2.getText());
-			m_toimipiste.setTLahiosoite(txtLahiosoite2.getText());
-			m_toimipiste.setTPostinro(txtPostinro2.getText());
-			m_toimipiste.setTPostitoimipaikka(txtPostitoimipaikka2.getText());
-			m_toimipiste.setTEmail(txtEmail2.getText());
-			m_toimipiste.setTPuhelinnro(txtPuhelinnro2.getText());
+			txtToimipisteID2.setText(m_toimipiste.getToimipisteId() + "");
+			txtNimi2.setText(m_toimipiste.getNimi());
+			txtLahiosoite2.setText(m_toimipiste.getTLahiosoite());
+			txtPostinro2.setText(m_toimipiste.getTPostinro());
+			txtPostitoimipaikka2.setText(m_toimipiste.getTPostitoimipaikka());
+			txtEmail2.setText(m_toimipiste.getTEmail());
+			txtPuhelinnro2.setText(m_toimipiste.getTPuhelinnro());
 		}
 		
 	}
@@ -783,7 +783,103 @@ public class GUI extends JFrame {
 		}
 		
     }
+
+    public  void muuta_toimipiste() {
+		//System.out.println("Muutetaan...");
+			boolean toimipiste_muutettu = false;
+		// asetetaan tiedot oliolle
+		m_toimipiste.setNimi(txtNimi2.getText());
+		m_toimipiste.setTLahiosoite(txtLahiosoite2.getText());
+		m_toimipiste.setTPostinro(txtPostinro2.getText());
+		m_toimipiste.setTPostitoimipaikka(txtPostitoimipaikka2.getText());
+		m_toimipiste.setTEmail(txtEmail2.getText());
+		m_toimipiste.setTPuhelinnro(txtPuhelinnro2.getText());
+			
+			try {
+				// yritetään muuttaa (UPDATE) tiedot kantaan
+				m_toimipiste.muutaToimipiste(conn);
+				toimipiste_muutettu = true;
+			} catch (SQLException se) {
+			// SQL virheet
+				JOptionPane.showMessageDialog(null, "Toimipisteen tietojen muuttaminen ei onnistu. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				 //se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				JOptionPane.showMessageDialog(null, "Toimipisteen tietojen muuttaminen ei onnistu. GUI " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (toimipiste_muutettu == true)
+					JOptionPane.showMessageDialog(null, "Toimipisteen tiedot muutettu.");
+			}
+		
+    }
     
+    public  void poista_toimipiste() {
+		// haetaan tietokannasta palvelua, jonka palvelu_id = txtPalveluID3 
+        m_toimipiste = null;
+		boolean toimipiste_poistettu = false;
+		
+		try {
+			m_toimipiste = Toimipiste.haeToimipiste(conn, Integer.parseInt(txtToimipisteID2.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Toimipistetta ei loydy. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Toimipistetta ei loydy. GUI " + e, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_toimipiste.getToimipisteId() == 0) {
+        // poistettavaa palvelua ei löydy tietokannasta, tyhjennetään tiedot näytöltä
+            txtToimipisteID2.setText("");
+            txtNimi2.setText("");
+            txtLahiosoite2.setText("");
+            txtPostinro2.setText("");
+            txtPostitoimipaikka2.setText("");
+            txtEmail2.setText("");
+            txtPuhelinnro2.setText("");
+			JOptionPane.showMessageDialog(null, "Toimipistetta ei loydy. GUI", "Virhe", JOptionPane.ERROR_MESSAGE);
+			return; // poistutaan
+		}
+		else
+		{
+			// naytetaan poistettavan opintosuorituksen tiedot
+			m_toimipiste.setToimipisteId(Integer.parseInt(txtToimipisteID2.getText()));
+            txtToimipisteID2.setText( "" + m_toimipiste.getToimipisteId());
+            txtNimi2.setText(m_toimipiste.getNimi());
+			txtLahiosoite2.setText(m_toimipiste.getTLahiosoite());
+			txtPostinro2.setText(m_toimipiste.getTPostinro());
+			txtPostitoimipaikka2.setText(m_toimipiste.getTPostitoimipaikka());
+			txtEmail2.setText(m_toimipiste.getTEmail());
+			txtPuhelinnro2.setText(m_toimipiste.getTPuhelinnro());
+		}
+		try {
+			if (JOptionPane.showConfirmDialog(null, "Haluatko todella poistaa toimipisteen?")==0) {// vahvistus ikkunassa
+				m_toimipiste.poistaToimipiste(conn);
+				toimipiste_poistettu = true;
+			}
+			} catch (SQLException se) {
+			// SQL virheet
+				JOptionPane.showMessageDialog(null, "Toimipisteen tietojen poistaminen ei onnistu. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				// se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				JOptionPane.showMessageDialog(null, "Toimipisteen tietojen poistaminen ei onnistu. GUI " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (toimipiste_poistettu == true) { // ainoastaan, jos vahvistettiin ja poisto onnistui
+                    txtToimipisteID2.setText("");
+                    txtNimi2.setText("");
+                    txtLahiosoite2.setText("");
+                    txtPostinro2.setText("");
+                    txtPostitoimipaikka2.setText("");
+                    txtEmail2.setText("");
+                    txtPuhelinnro2.setText("");
+					JOptionPane.showMessageDialog(null, "Toimipiste tiedot poistettu tietokannasta.");
+				}
+			}
+			
+		
+	}
 
 
 
@@ -823,7 +919,7 @@ public class GUI extends JFrame {
             
 			txtPalveluID3.setText(m_palvelu.getPalvelu_id() + "");
 			txtToimipisteID3.setText(m_palvelu.getToimipiste_id() + "");
-			txtNimi3.setText(m_palvelu.getPNimi());
+			txtNimi3.setText(m_palvelu.getNimi());
 			txtTyyppi3.setText(m_palvelu.getTyyppi() + "");
 			txtKuvaus3.setText(m_palvelu.getKuvaus());
             txtHinta3.setText(m_palvelu.getHinta() + "");
@@ -854,7 +950,7 @@ public class GUI extends JFrame {
 			palvelu_lisatty = false;
 			txtPalveluID3.setText(m_palvelu.getPalvelu_id() + "");
 			txtToimipisteID3.setText(m_palvelu.getToimipiste_id() + "");
-			txtNimi3.setText(m_palvelu.getPNimi());
+			txtNimi3.setText(m_palvelu.getNimi());
 			txtTyyppi3.setText(m_palvelu.getTyyppi() + "");
 			txtKuvaus3.setText(m_palvelu.getKuvaus());
             txtHinta3.setText(m_palvelu.getHinta() + "");
@@ -866,7 +962,7 @@ public class GUI extends JFrame {
 			// asetetaan tiedot oliolle
 			m_palvelu.setPalvelu_id(Integer.parseInt(txtPalveluID3.getText()));
 			m_palvelu.setToimipiste_id(Integer.parseInt(txtToimipisteID3.getText()));
-			m_palvelu.setPNimi(txtNimi3.getText());
+			m_palvelu.setNimi(txtNimi3.getText());
 			m_palvelu.setTyyppi(Integer.parseInt(txtTyyppi3.getText()));
 			m_palvelu.setKuvaus(txtKuvaus3.getText());
 			m_palvelu.setHinta(Double.parseDouble(txtHinta3.getText()));
@@ -898,7 +994,7 @@ public class GUI extends JFrame {
 		//System.out.println("Muutetaan...");
 			boolean palvelu_muutettu = false;
 		// asetetaan tiedot oliolle
-		m_palvelu.setPNimi(txtNimi3.getText());
+		m_palvelu.setNimi(txtNimi3.getText());
 		m_palvelu.setTyyppi(Integer.parseInt(txtTyyppi3.getText()));
 		m_palvelu.setHinta(Double.parseDouble(txtHinta3.getText()));
 		m_palvelu.setAlv(Double.parseDouble(txtAlv3.getText()));
@@ -953,7 +1049,7 @@ public class GUI extends JFrame {
 			// naytetaan poistettavan opintosuorituksen tiedot
 			m_palvelu.setPalvelu_id(Integer.parseInt(txtPalveluID3.getText()));
             txtToimipisteID3.setText( "" + m_palvelu.getToimipiste_id());
-            txtNimi3.setText(m_palvelu.getPNimi());
+            txtNimi3.setText(m_palvelu.getNimi());
             txtTyyppi3.setText( "" + m_palvelu.getTyyppi());
             txtKuvaus3.setText(m_palvelu.getKuvaus());
             txtHinta3.setText( "" + m_palvelu.getHinta());
