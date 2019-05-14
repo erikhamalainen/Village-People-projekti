@@ -438,7 +438,7 @@ public class GUI extends JFrame {
         // establishing a connection to the db, "driver:databasesystem://ip:port/database","user","password"
         conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","salasana123");
+            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","!Tyyny12345!");
     
         }catch (Exception e) {
             System.out.println(e);
@@ -785,7 +785,7 @@ public class GUI extends JFrame {
             
 			txtPalveluID3.setText(m_palvelu.getPalvelu_id() + "");
 			txtToimipisteID3.setText(m_palvelu.getToimipiste_id() + "");
-			txtNimi3.setText(m_palvelu.getNimi());
+			txtNimi3.setText(m_palvelu.getPNimi());
 			txtTyyppi3.setText(m_palvelu.getTyyppi() + "");
 			txtKuvaus3.setText(m_palvelu.getKuvaus());
             txtHinta3.setText(m_palvelu.getHinta() + "");
@@ -816,7 +816,7 @@ public class GUI extends JFrame {
 			palvelu_lisatty = false;
 			txtPalveluID3.setText(m_palvelu.getPalvelu_id() + "");
 			txtToimipisteID3.setText(m_palvelu.getToimipiste_id() + "");
-			txtNimi3.setText(m_palvelu.getNimi());
+			txtNimi3.setText(m_palvelu.getPNimi());
 			txtTyyppi3.setText(m_palvelu.getTyyppi() + "");
 			txtKuvaus3.setText(m_palvelu.getKuvaus());
             txtHinta3.setText(m_palvelu.getHinta() + "");
@@ -828,7 +828,7 @@ public class GUI extends JFrame {
 			// asetetaan tiedot oliolle
 			m_palvelu.setPalvelu_id(Integer.parseInt(txtPalveluID3.getText()));
 			m_palvelu.setToimipiste_id(Integer.parseInt(txtToimipisteID3.getText()));
-			m_palvelu.setNimi(txtNimi3.getText());
+			m_palvelu.setPNimi(txtNimi3.getText());
 			m_palvelu.setTyyppi(Integer.parseInt(txtTyyppi3.getText()));
 			m_palvelu.setKuvaus(txtKuvaus3.getText());
 			m_palvelu.setHinta(Double.parseDouble(txtHinta3.getText()));
@@ -860,7 +860,7 @@ public class GUI extends JFrame {
 		//System.out.println("Muutetaan...");
 			boolean palvelu_muutettu = false;
 		// asetetaan tiedot oliolle
-		m_palvelu.setNimi(txtNimi3.getText());
+		m_palvelu.setPNimi(txtNimi3.getText());
 		m_palvelu.setTyyppi(Integer.parseInt(txtTyyppi3.getText()));
 		m_palvelu.setHinta(Double.parseDouble(txtHinta3.getText()));
 		m_palvelu.setAlv(Double.parseDouble(txtAlv3.getText()));
@@ -915,7 +915,7 @@ public class GUI extends JFrame {
 			// naytetaan poistettavan opintosuorituksen tiedot
 			m_palvelu.setPalvelu_id(Integer.parseInt(txtPalveluID3.getText()));
             txtToimipisteID3.setText( "" + m_palvelu.getToimipiste_id());
-            txtNimi3.setText(m_palvelu.getNimi());
+            txtNimi3.setText(m_palvelu.getPNimi());
             txtTyyppi3.setText( "" + m_palvelu.getTyyppi());
             txtKuvaus3.setText(m_palvelu.getKuvaus());
             txtHinta3.setText( "" + m_palvelu.getHinta());
