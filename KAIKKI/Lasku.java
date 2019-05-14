@@ -82,7 +82,7 @@ public class Lasku {
 	Staattinen metodi, ei vaadi fyysisen olion olemassaoloa.
 	*/
 	public static Lasku haeLasku (Connection connection, int id) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
-		// haetaan tietokannasta asiakasta, jonka asiakas_id = id 
+		// haetaan tietokannasta asiakasta, jonka lasku_id = id 
 		String sql = "SELECT lasku_id, varaus_id, asiakas_id, nimi, lahiosoite, postitoimipaikka, postinro, summa, alv " 
 					+ " FROM Lasku WHERE lasku_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
@@ -108,7 +108,7 @@ public class Lasku {
 		
 		try {
 			if (tulosjoukko.next () == true){
-				//lasku_id, varaus_id, asiakas_id, nimi, lahiosoite, postitoimipaikka, postinro, summa, al
+				//lasku_id, varaus_id, asiakas_id, nimi, lahiosoite, postitoimipaikka, postinro, summa, alv
 				laskuOlio.setLaskuId  (tulosjoukko.getInt("lasku_id"));
 				laskuOlio.setVarausId (tulosjoukko.getInt("varaus_id"));
 				laskuOlio.setAsiakasId (tulosjoukko.getInt("asiakas_id"));
@@ -132,7 +132,7 @@ public class Lasku {
 	Metodissa "laskuolio kirjoittaa tietonsa tietokantaan".
 	*/
      public int lisaaLasku (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
-		// haetaan tietokannasta asiakasta, jonka lasku_id = olion id -> ei voi lisätä, jos on jo kannassa
+		// haetaan tietokannasta laskua, jonka lasku_id = olion id -> ei voi lisätä, jos on jo kannassa
 		String sql = "SELECT lasku_id" 
 					+ " FROM Lasku WHERE lasku_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
@@ -141,10 +141,10 @@ public class Lasku {
 		try {
 			// luo PreparedStatement-olio sql-lauseelle
 			lause = connection.prepareStatement(sql);
-			lause.setInt( 1, getLaskuId()); // asetetaan where ehtoon (?) arvo, olion asiakasid
+			lause.setInt( 1, getLaskuId()); // asetetaan where ehtoon (?) arvo, olion laskuid
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
-			if (tulosjoukko.next () == true) { // asiakas loytyi
+			if (tulosjoukko.next () == true) { // lasku loytyi
 				throw new Exception("Lasku on jo olemassa");
 			}
 		} catch (SQLException se) {
@@ -193,7 +193,7 @@ public class Lasku {
 	Metodissa "laskuolio muuttaa tietonsa tietokantaan".
 	*/
     public int muutaLasku (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
-		// haetaan tietokannasta asiakasta, jonka asiakas_id = olion id, virhe, jos ei löydy
+		// haetaan tietokannasta asiakasta, jonka lasku_id = olion id, virhe, jos ei löydy
 		String sql = "SELECT lasku_id" 
 					+ " FROM Lasku WHERE lasku_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
