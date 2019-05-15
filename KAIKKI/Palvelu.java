@@ -58,11 +58,6 @@ public class Palvelu { // Luodaan palvelu-luokka
         alv = a;
     }
 
-    /*@Override
-    public String toString(){
-        return (palvelu_id + " " + nimi);
-    }*/
-
     public static Palvelu haePalvelu (Connection connection, int pid) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
 		// haetaan tietokannasta palvelua, jonka palvelu_id = pid 
 		String sql = "SELECT palvelu_id, toimipiste_id, nimi, tyyppi, kuvaus, hinta, alv " 
