@@ -9,6 +9,7 @@ public class GUI extends JFrame {
     private Asiakas m_asiakas = new Asiakas();
     private Toimipiste m_toimipiste = new Toimipiste();
     private Palvelu m_palvelu = new Palvelu();
+    private Varaus m_varaus = new Varaus();
     //GUI container
     private JPanel pnlContainer;
 
@@ -438,7 +439,7 @@ public class GUI extends JFrame {
         // establishing a connection to the db, "driver:databasesystem://ip:port/database","user","password"
         conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","salasana123");
+            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","salasana");
     
         }catch (Exception e) {
             System.out.println(e);
@@ -459,7 +460,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                muuta_tiedot();
             }
         });
 
@@ -467,7 +468,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                hae_tiedot();
             }
         });
 
@@ -475,7 +476,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                poista_tiedot();
             }
         });
 
@@ -547,7 +548,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                lisaa_varaus();
             }
         });
 
@@ -555,7 +556,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                muuta_varaus();
             }
         });
 
@@ -563,7 +564,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                hae_varaus();
             }
         });
 
@@ -571,7 +572,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                poista_varaus();
             }
         });
 
@@ -626,11 +627,11 @@ public class GUI extends JFrame {
 		} catch (SQLException se) {
 		// SQL virheet
 			asiakas_lisatty = false;
-			JOptionPane.showMessageDialog(null, "Tietokantavirhe.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe." + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 		// muut virheet
 			asiakas_lisatty = false;
-			JOptionPane.showMessageDialog(null, "Tietokantavirhe.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe." + e, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
 		}
 		if (m_asiakas.getEtunimi() != null) {
 		// asiakas jo olemassa, näytetään tiedot
@@ -676,6 +677,144 @@ public class GUI extends JFrame {
 		}
 		
     }
+
+    public  void hae_tiedot() {
+		// haetaan tietokannasta asiakasta, jonka asiakas_id = txtAsiakasID 
+		m_asiakas = null;
+		
+		try {
+			m_asiakas = Asiakas.haeAsiakas (conn, Integer.parseInt(txtAsiakasID1.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Asiakasta ei loydy." + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Asiakasta ei loydy." + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_asiakas.getEtunimi() == null) {
+		// muut virheet
+			txtEtunimi1.setText("");
+			txtSukunimi1.setText("");
+			txtLahiosoite1.setText("");
+			txtPostinro1.setText("");
+			txtPostitoimipaikka1.setText("");
+			txtEmail1.setText("");
+			txtPuhelinnro1.setText("");
+			JOptionPane.showMessageDialog(null, "Asiakasta ei loydy.", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+			// naytetaan tiedot
+			txtEtunimi1.setText(m_asiakas.getEtunimi());
+			txtSukunimi1.setText(m_asiakas.getSukunimi());
+			txtLahiosoite1.setText(m_asiakas.getLahiosoite());
+			txtPostinro1.setText(m_asiakas.getPostinro());
+			txtPostitoimipaikka1.setText(m_asiakas.getPostitoimipaikka());
+			txtEmail1.setText(m_asiakas.getEmail());
+			txtPuhelinnro1.setText(m_asiakas.getPuhelinnro());
+		}
+		
+    }
+    
+    public  void muuta_tiedot() {
+		//System.out.println("Muutetaan...");
+			boolean asiakas_muutettu = true;
+		// asetetaan tiedot oliolle
+			m_asiakas.setEtunimi(txtEtunimi1.getText());
+			m_asiakas.setSukunimi(txtSukunimi1.getText());
+			m_asiakas.setLahiosoite(txtLahiosoite1.getText());
+			m_asiakas.setPostinro(txtPostinro1.getText());
+			m_asiakas.setPostitoimipaikka(txtPostitoimipaikka1.getText());
+			m_asiakas.setEmail(txtEmail1.getText());
+			m_asiakas.setPuhelinnro(txtPuhelinnro1.getText());
+			
+			try {
+				// yritetään muuttaa (UPDATE) tiedot kantaan
+				m_asiakas.muutaAsiakas (conn);
+			} catch (SQLException se) {
+			// SQL virheet
+				asiakas_muutettu = false;
+				JOptionPane.showMessageDialog(null, "Asiakkaan tietojen muuttaminen ei onnistu.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				 //se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				asiakas_muutettu = false;
+				JOptionPane.showMessageDialog(null, "Asiakkaan tietojen muuttaminen ei onnistu.", "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (asiakas_muutettu == true)
+					JOptionPane.showMessageDialog(null, "Asiakkaan tiedot muutettu.");
+			}
+		
+    }
+    
+    public  void poista_tiedot() {
+		// haetaan tietokannasta asiakasta, jonka asiakas_id = txtAsiakasID 
+		m_asiakas = null;
+		boolean asiakas_poistettu = false;
+		
+		try {
+			m_asiakas = Asiakas.haeAsiakas (conn, Integer.parseInt(txtAsiakasID1.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Asiakasta ei loydy.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Asiakasta ei loydy.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_asiakas.getEtunimi() == null) {
+		// poistettavaa asiakasta ei löydy tietokannasta, tyhjennetään tiedot näytöltä
+			txtEtunimi1.setText("");
+			txtSukunimi1.setText("");
+			txtLahiosoite1.setText("");
+			txtPostinro1.setText("");
+			txtPostitoimipaikka1.setText("");
+			txtEmail1.setText("");
+			txtPuhelinnro1.setText("");
+			JOptionPane.showMessageDialog(null, "Asiakasta ei loydy.", "Virhe", JOptionPane.ERROR_MESSAGE);
+			return; // poistutaan
+		}
+		else
+		{
+			// naytetaan poistettavan asiakkaan tiedot
+			txtEtunimi1.setText(m_asiakas.getEtunimi());
+			txtSukunimi1.setText(m_asiakas.getSukunimi());
+			txtLahiosoite1.setText(m_asiakas.getLahiosoite());
+			txtPostinro1.setText(m_asiakas.getPostinro());
+			txtPostitoimipaikka1.setText(m_asiakas.getPostitoimipaikka());
+			txtEmail1.setText(m_asiakas.getEmail());
+			txtPuhelinnro1.setText(m_asiakas.getPuhelinnro());
+		}
+		try {
+			if (JOptionPane.showConfirmDialog(null, "Haluatko todella poistaa asiakkaan?")==0) {// vahvistus ikkunassa
+				m_asiakas.poistaAsiakas (conn);
+				asiakas_poistettu = true;
+			}
+			} catch (SQLException se) {
+			// SQL virheet
+				JOptionPane.showMessageDialog(null, "Asiakkaan tietojen poistaminen ei onnistu.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				// se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				JOptionPane.showMessageDialog(null, "Asiakkaan tietojen poistaminen ei onnistu.", "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (asiakas_poistettu == true) { // ainoastaan, jos vahvistettiin ja poisto onnistui
+					txtAsiakasID1.setText("");
+					txtEtunimi1.setText("");
+					txtSukunimi1.setText("");
+					txtLahiosoite1.setText("");
+					txtPostinro1.setText("");
+					txtPostitoimipaikka1.setText("");
+					txtEmail1.setText("");
+					txtPuhelinnro1.setText("");
+					JOptionPane.showMessageDialog(null, "Asiakkaan tiedot poistettu tietokannasta.");
+					m_asiakas = null;
+				}
+			}
+			
+		
+	}
     
 
    
@@ -1083,6 +1222,197 @@ public class GUI extends JFrame {
 			
 		
 	}
+
+
+    //varaus osio
+
+    public  void lisaa_varaus() {
+		// lisätään tietokantaan varaus
+		//System.out.println("Lisataan...");
+		boolean varaus_lisatty = true;
+		m_varaus = null;
+		try {
+			m_varaus = Varaus.haeVaraus (conn, Integer.parseInt(txtVarausID4.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			varaus_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe." + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			varaus_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe." + e, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_varaus.getVarattuPvm() != null) {
+		// asiakas jo olemassa, näytetään tiedot
+			varaus_lisatty = false;
+			txtVahvistuspvm4.setText(m_varaus.getVahvistusPvm());
+			txtAlkupvm4.setText(m_varaus.getVarattuAlkuPvm());
+			txtLoppupvm4.setText(m_varaus.getVarattuLoppuPvm());
+			JOptionPane.showMessageDialog(null, "Varaus on jo olemassa.", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+			// asetetaan tiedot oliolle
+			m_varaus.setVarausId(Integer.parseInt(txtVarausID4.getText()));
+			m_varaus.setAsiakasId(Integer.parseInt(txtAsiakasID4.getText()));
+			m_varaus.setToimipisteId(Integer.parseInt(txtToimipisteID4.getText()));
+			m_varaus.setVarattuPvm(txtVarauspvm4.getText());
+			m_varaus.setVahvistusPvm(txtVahvistuspvm4.getText());
+			m_varaus.setVarattuAlkuPvm(txtAlkupvm4.getText());
+			m_varaus.setVarattuLoppuPvm(txtLoppupvm4.getText());
+			try {
+				// yritetään kirjoittaa kantaan
+				m_varaus.lisaaVaraus (conn);
+			} catch (SQLException se) {
+			// SQL virheet
+				varaus_lisatty = false;
+				JOptionPane.showMessageDialog(null, "Varauksen lisaaminen ei onnistu.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+			//	 se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				varaus_lisatty = false;
+				JOptionPane.showMessageDialog(null, "Varauksen lisaaminen ei onnistu.", "Virhe", JOptionPane.ERROR_MESSAGE);
+			//	 e.printStackTrace();
+			}finally {
+				if (varaus_lisatty == true)
+					JOptionPane.showMessageDialog(null, "Varauksen tiedot lisatty tietokantaan.");
+			}
+		
+		}
+		
+    }
+
+    public  void hae_varaus() {
+		// haetaan tietokannasta varausta, jonka varaus_id = txtVarausID4
+		m_varaus = null;
+		
+		try {
+			m_varaus = Varaus.haeVaraus (conn, Integer.parseInt(txtVarausID4.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Varausta ei loydy." + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Varausta ei loydy." + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_varaus.getVarattuPvm() == null) {
+		// muut virheet
+            txtAsiakasID4.setText("");
+            txtToimipisteID4.setText("");
+            txtVahvistuspvm4.setText("");
+			txtAlkupvm4.setText("");
+			txtLoppupvm4.setText("");
+			JOptionPane.showMessageDialog(null, "Varausta ei loydy.", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+			// naytetaan tiedot
+			txtAsiakasID4.setText(m_varaus.getAsiakasId() + "");
+			txtToimipisteID4.setText(m_varaus.getToimipisteId() + "");
+			txtVarauspvm4.setText(m_varaus.getVarattuPvm());
+			txtVahvistuspvm4.setText(m_varaus.getVahvistusPvm());
+			txtAlkupvm4.setText(m_varaus.getVarattuAlkuPvm());
+			txtLoppupvm4.setText(m_varaus.getVarattuLoppuPvm());
+		}
+		
+    }
+    
+    public  void muuta_varaus() {
+		//System.out.println("Muutetaan...");
+			boolean varaus_muutettu = true;
+		// asetetaan tiedot oliolle
+			m_varaus.setAsiakasId(Integer.parseInt(txtAsiakasID4.getText()));
+			m_varaus.setToimipisteId(Integer.parseInt(txtToimipisteID4.getText()));
+			m_varaus.setVarattuPvm(txtVarauspvm4.getText());
+			m_varaus.setVahvistusPvm(txtVahvistuspvm4.getText());
+			m_varaus.setVarattuAlkuPvm(txtAlkupvm4.getText());
+			m_varaus.setVarattuLoppuPvm(txtLoppupvm4.getText());
+			
+			try {
+				// yritetään muuttaa (UPDATE) tiedot kantaan
+				m_varaus.muutaVaraus (conn);
+			} catch (SQLException se) {
+			// SQL virheet
+				varaus_muutettu = false;
+				JOptionPane.showMessageDialog(null, "Varauksen tietojen muuttaminen ei onnistu.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				 //se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				varaus_muutettu = false;
+				JOptionPane.showMessageDialog(null, "Varauksen tietojen muuttaminen ei onnistu.", "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (varaus_muutettu == true)
+					JOptionPane.showMessageDialog(null, "Varauksen tiedot muutettu.");
+			}
+		
+    }
+    
+    public  void poista_varaus() {
+		// haetaan tietokannasta asiakasta, jonka asiakas_id = txtAsiakasID 
+		m_varaus = null;
+        boolean varaus_poistettu = false;
+		
+		try {
+			m_varaus = Varaus.haeVaraus (conn, Integer.parseInt(txtVarausID4.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Varausta ei loydy.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Varausta ei loydy.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_varaus.getVarattuPvm() == null) {
+		// poistettavaa asiakasta ei löydy tietokannasta, tyhjennetään tiedot näytöltä
+			txtAsiakasID4.setText("");
+			txtToimipisteID4.setText("");
+			txtVarauspvm4.setText("");
+			txtVahvistuspvm4.setText("");
+			txtAlkupvm4.setText("");
+			txtLoppupvm4.setText("");
+			JOptionPane.showMessageDialog(null, "Varausta ei loydy.", "Virhe", JOptionPane.ERROR_MESSAGE);
+			return; // poistutaan
+		}
+		else
+		{
+			// naytetaan poistettavan asiakkaan tiedot
+			txtAsiakasID4.setText(m_varaus.getAsiakasId() + "");
+			txtToimipisteID4.setText(m_varaus.getToimipisteId() + "");
+			txtVarauspvm4.setText(m_varaus.getVarattuPvm());
+			txtVahvistuspvm4.setText(m_varaus.getVahvistusPvm());
+			txtAlkupvm4.setText(m_varaus.getVarattuAlkuPvm());
+			txtLoppupvm4.setText(m_varaus.getVarattuLoppuPvm());
+			
+		}
+		try {
+			if (JOptionPane.showConfirmDialog(null, "Haluatko todella poistaa asiakkaan?")==0) {// vahvistus ikkunassa
+				m_varaus.poistaVaraus (conn);
+				varaus_poistettu = true;
+			}
+			} catch (SQLException se) {
+			// SQL virheet
+				JOptionPane.showMessageDialog(null, "Varaus tietojen poistaminen ei onnistu.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				// se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				JOptionPane.showMessageDialog(null, "Varaus tietojen poistaminen ei onnistu.", "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (varaus_poistettu == true) { // ainoastaan, jos vahvistettiin ja poisto onnistui
+					txtAsiakasID4.setText("");
+					txtToimipisteID4.setText("");
+					txtVarauspvm4.setText("");
+					txtVahvistuspvm4.setText("");
+					txtAlkupvm4.setText("");
+					txtLoppupvm4.setText("");
+					JOptionPane.showMessageDialog(null, "Varauksen tiedot poistettu tietokannasta.");
+					m_varaus = null;
+				}
+			}
+			
+		
+	}
+
 
 
     public static void main (String[] args){
