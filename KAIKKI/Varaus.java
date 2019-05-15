@@ -17,8 +17,7 @@ import java.lang.*;
         public Varaus(){ //Varaus
  
         }
-        public int getVarausId() //VarausId
-        {
+        public int getVarausId() {
             return varaus_id;
         }
         public int getAsiakasId() {
@@ -27,20 +26,20 @@ import java.lang.*;
         public int getToimipisteId() {
             return toimipiste_id;
         }
-        public String  getVarattuPvm() {
+        public String getVarattuPvm() {
             return varattu_pvm;
         }
-        public String   getVahvistusPvm() {
+        public String getVahvistusPvm() {
             return vahvistus_pvm;
         }
-        public String   getVarattuAlkuPvm() {
+        public String getVarattuAlkuPvm() {
             return varattu_alkupvm;
         }
-        public String   getVarattuLoppuPvm() {
+        public String getVarattuLoppuPvm() {
             return varattu_loppupvm;
-        }
-        public void setVarausId (int vid)
-        {
+		}
+		
+        public void setVarausId (int vid) {
             varaus_id = vid;
         }
         public void setAsiakasId(int aid) {
@@ -58,7 +57,7 @@ import java.lang.*;
         public void setVarattuAlkuPvm(String varapm) {
             varattu_alkupvm = varapm;
         }
-        public void VarattuLoppuPvm (String  varlpm) {
+        public void setVarattuLoppuPvm (String  varlpm) {
             varattu_loppupvm = varlpm;
         }
         
@@ -67,17 +66,16 @@ import java.lang.*;
     public String toString(){
         return (asiakas_id + " " + varaus_id + " " + toimipiste_id);
     }
-	public static Varaus haeVaraus (Connection connection, int id) throws Exception { // tietokantayhteys välitetään
-																						// parametrina
+	public static Varaus haeVaraus (Connection connection, int vid) throws Exception { // tietokantayhteys välitetään parametrina
 		// haetaan tietokannasta asiakasta, jonka asiakas_id = id 
-		String sql = "SELECT varaus_id, asiakas_id, toimipiste_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm, " 
+		String sql = "SELECT varaus_id, asiakas_id, toimipiste_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm" 
 					+ " FROM Varaus WHERE varaus_id = ?"; // ehdon arvo asetetaan jäljempänä
 		ResultSet tulosjoukko = null;
 		PreparedStatement lause = null;
 		try {
 			// luo PreparedStatement-olio sql-lauseelle
 			lause = connection.prepareStatement(sql);
-			lause.setInt( 1, 12001); // asetetaan where ehtoon (?) arvo
+			lause.setInt( 1, vid); // asetetaan where ehtoon (?) arvo
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
             if (tulosjoukko == null) {
@@ -91,7 +89,7 @@ import java.lang.*;
                         throw e;
 		}
 		// käsitellään resultset - laitetaan tiedot varausoliolle
-		Varaus varausOlio = new Varaus ();
+		Varaus varausOlio = new Varaus();
 		
 		try {
 			if (tulosjoukko.next () == true){
@@ -99,10 +97,10 @@ import java.lang.*;
 				varausOlio.setVarausId (tulosjoukko.getInt("varaus_id"));
 				varausOlio.setAsiakasId (tulosjoukko.getInt("asiakas_id"));
 				varausOlio.setToimipisteId(tulosjoukko.getInt("toimipiste_id"));
-				varausOlio.setVarattuPvm (tulosjoukko.getString ("varaus paivamaara"));
-				varausOlio.setVahvistusPvm (tulosjoukko.getString ("vahvistus paivamaara"));
-				varausOlio.setVarattuAlkuPvm (tulosjoukko.getString ("varauksen alku paivamaara"));
-				varausOlio.VarattuLoppuPvm (tulosjoukko.getString ("varauksen loppu paivamaara"));
+				varausOlio.setVarattuPvm (tulosjoukko.getString ("varattu_pvm"));
+				varausOlio.setVahvistusPvm (tulosjoukko.getString ("vahvistus_pvm"));
+				varausOlio.setVarattuAlkuPvm (tulosjoukko.getString ("varattu_alkupvm"));
+				varausOlio.setVarattuLoppuPvm (tulosjoukko.getString ("varattu_loppupvm"));
 				
 			}
 		}catch (SQLException e) {
@@ -112,6 +110,10 @@ import java.lang.*;
 		
 		return varausOlio;
 	}
+
+
+
+	
 	/*
 	Lisätään asiakkaan tiedot tietokantaan.
 	Metodissa "varaussolio kirjoittaa tietonsa tietokantaan".
@@ -126,7 +128,7 @@ import java.lang.*;
 		try {
 			// luo PreparedStatement-olio sql-lauseelle
 			lause = connection.prepareStatement(sql);
-			lause.setInt( 1, getVarausId()); // asetetaan where ehtoon (?) arvo, olion varausid
+			lause.setInt(1, getVarausId()); // asetetaan where ehtoon (?) arvo, olion varausid
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
 			if (tulosjoukko.next () == true) { // varausloytyi
@@ -139,43 +141,45 @@ import java.lang.*;
             // JDBC virheet
                     throw e;
 		}
-// parsitaan INSERT
-sql = "INSERT INTO Varaus "
-+ "(varaus_id, asiakas_id, toimipiste_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm,) "
-+ " VALUES (?, ?, ?, ?, ?, ?, ?)";
-// System.out.println("Lisataan " + sql);
-lause = null;
-try {
-    // luo PreparedStatement-olio sql-lauseelle
-    lause = connection.prepareStatement(sql);
-    // laitetaan arvot INSERTtiin
-    lause.setInt( 1, getVarausId());
-    lause.setInt(2, getAsiakasId()); 
-    lause.setInt(3, getToimipisteId()); 
-    lause.setString(4, getVarattuPvm());
-    lause.setString(5, getVahvistusPvm ());
-    lause.setString(6, getVarattuAlkuPvm());
-    lause.setString(7, getVarattuLoppuPvm());
-    
-    // suorita sql-lause
-    int lkm = lause.executeUpdate();	
-//	System.out.println("lkm " + lkm);
-    if (lkm == 0) {
-        throw new Exception("Varauksen lisaaminen ei onnistu");
-    }
-} catch (SQLException se) {
-    // SQL virheet
-    throw se;
-} catch (Exception e) {
-    // JDBC ym. virheet
-    throw e;
-}
-return 0;
-}
+		// parsitaan INSERT
+		sql = "INSERT INTO Varaus "
+		+ "(varaus_id, asiakas_id, toimipiste_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm) "
+		+ " VALUES (?, ?, ?, ?, ?, ?, ?)";
+		// System.out.println("Lisataan " + sql);
+		lause = null;
+		try {
+			// luo PreparedStatement-olio sql-lauseelle
+			lause = connection.prepareStatement(sql);
+			// laitetaan arvot INSERTtiin
+			lause.setInt(1, getVarausId());
+			lause.setInt(2, getAsiakasId()); 
+			lause.setInt(3, getToimipisteId()); 
+			lause.setString(4, getVarattuPvm());
+			lause.setString(5, getVahvistusPvm());
+			lause.setString(6, getVarattuAlkuPvm());
+			lause.setString(7, getVarattuLoppuPvm());
+			
+			// suorita sql-lause
+			int lkm = lause.executeUpdate();	
+			//System.out.println("lkm " + lkm);
+			if (lkm == 0) {
+				throw new Exception("Varauksen lisaaminen ei onnistu");
+			}
+		} catch (SQLException se) {
+			// SQL virheet
+			throw se;
+		} catch (Exception e) {
+			// JDBC ym. virheet
+			throw e;
+		}
+		return 0;
+		}
 	/*
 	Muutetaan varauksen tiedot tietokantaan id-tietoa (avain) lukuunottamatta. 
 	Metodissa "varaussolio muuttaa tietonsa tietokantaan".
 	*/
+
+	
     public int muutaVaraus (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
 		// haetaan tietokannasta varausta, jonka varaus_id = olion id, virhe, jos ei löydy
 		String sql = "SELECT varaus_id" 
