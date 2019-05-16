@@ -118,7 +118,7 @@ public class Palvelu { // Luodaan palvelu-luokka
 		try {
 			// luo PreparedStatement-olio sql-lauseelle
 			lause = connection.prepareStatement(sql);
-			lause.setInt( 1, getPalvelu_id()); // asetetaan where ehtoon (?) arvo, olion palveluid
+			lause.setInt(1, getPalvelu_id()); // asetetaan where ehtoon (?) arvo, olion palveluid
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
 			if (tulosjoukko.next () == true) { // palvelu loytyi

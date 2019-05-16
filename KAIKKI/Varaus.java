@@ -90,7 +90,7 @@ import java.lang.*;
 		}
 		// käsitellään resultset - laitetaan tiedot varausoliolle
 		Varaus varausOlio = new Varaus();
-		
+
 		try {
 			if (tulosjoukko.next () == true){
 				//varaus_id, asiakas_id, toimipiste_id, varattu_pvm, vahvistus_pvm, varattu_alkupvm, varattu_loppupvm,
@@ -106,7 +106,7 @@ import java.lang.*;
 		}catch (SQLException e) {
 			throw e;
 		}
-		// palautetaan varaussolio
+		//palautetaan varaussolio
 		
 		return varausOlio;
 	}

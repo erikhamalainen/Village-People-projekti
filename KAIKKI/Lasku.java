@@ -113,7 +113,7 @@ public class Lasku {
 				laskuOlio.setVarausId (tulosjoukko.getInt("varaus_id"));
 				laskuOlio.setAsiakasId (tulosjoukko.getInt("asiakas_id"));
 				laskuOlio.setNimi (tulosjoukko.getString("nimi"));
-				laskuOlio.setLahiosoite (tulosjoukko.getString("lahisoite"));
+				laskuOlio.setLahiosoite (tulosjoukko.getString("lahiosoite"));
 				laskuOlio.setPostitoimipaikka (tulosjoukko.getString("postitoimipaikka"));
 				laskuOlio.setPostinro (tulosjoukko.getString("postinro"));
 				laskuOlio.setSumma (tulosjoukko.getDouble("summa"));
@@ -201,7 +201,7 @@ public class Lasku {
 		try {
 			// luo PreparedStatement-olio sql-lauseelle
 			lause = connection.prepareStatement(sql);
-			lause.setInt( 1, getLaskuId()); // asetetaan where ehtoon (?) arvo
+			lause.setInt(1, getLaskuId()); // asetetaan where ehtoon (?) arvo
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
 			if (tulosjoukko.next () == false) { // laskua ei löytynyt
@@ -236,7 +236,7 @@ public class Lasku {
             lause.setDouble(8, getSumma ());
             lause.setDouble(9, getAlv ());
 			// where-ehdon arvo
-            lause.setInt( 8, getAsiakasId());
+            lause.setInt( 10, getAsiakasId());
 			// suorita sql-lause
 			int lkm = lause.executeUpdate();	
 			if (lkm == 0) {
@@ -258,13 +258,13 @@ public class Lasku {
 	public int poistaLasku (Connection connection) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
 		
 		// parsitaan DELETE
-		String sql = "DELETE FROM  Lasku WHERE lasku_id = ?";
+		String sql = "DELETE FROM lasku WHERE lasku_id = ?";
 		PreparedStatement lause = null;
 		try {
 			// luo PreparedStatement-olio sql-lauseelle
 			lause = connection.prepareStatement(sql);
 			// laitetaan arvot DELETEn WHERE-ehtoon
-			lause.setInt( 1, getLaskuId());
+			lause.setInt(1, getLaskuId());
 			// suorita sql-lause
 			int lkm = lause.executeUpdate();	
 			if (lkm == 0) {

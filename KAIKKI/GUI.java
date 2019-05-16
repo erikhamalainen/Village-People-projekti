@@ -10,6 +10,7 @@ public class GUI extends JFrame {
     private Toimipiste m_toimipiste = new Toimipiste();
     private Palvelu m_palvelu = new Palvelu();
 	private Varaus m_varaus = new Varaus();
+	private Lasku m_lasku = new Lasku();
 	private VarauksenPalvelut m_vpalvelu = new VarauksenPalvelut();
     //GUI container
     private JPanel pnlContainer;
@@ -493,7 +494,7 @@ public class GUI extends JFrame {
         // establishing a connection to the db, "driver:databasesystem://ip:port/database","user","password"
         conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","salasana");
+            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/vp","root","salasana123");
     
         }catch (Exception e) {
             System.out.println(e);
@@ -634,7 +635,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                lisaa_lasku();
             }
         });
 
@@ -642,7 +643,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                muuta_lasku();
             }
         });
 
@@ -650,7 +651,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                hae_lasku();
             }
         });
 
@@ -658,7 +659,7 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                poista_lasku();
             }
 		});
 
@@ -1493,6 +1494,217 @@ public class GUI extends JFrame {
 					txtLoppupvm4.setText("");
 					JOptionPane.showMessageDialog(null, "Varauksen tiedot poistettu tietokannasta.");
 					m_varaus = null;
+				}
+			}
+			
+		
+	}
+
+	public void lisaa_lasku() {
+		// lisätään tietokantaan lasku
+		//System.out.println("Lisataan...");
+		boolean lasku_lisatty = true;
+		m_lasku = null;
+		try {
+			m_lasku = Lasku.haeLasku (conn, Integer.parseInt(txtLaskuID5.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			lasku_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe." + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			lasku_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe." + e, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_lasku.getVarausId() != 0) {
+		// asiakas jo olemassa, näytetään tiedot
+			lasku_lisatty = false;
+			txtLaskuID5.setText(m_lasku.getLaskuId() + "");
+			txtVarausID5.setText(m_lasku.getVarausId() + "");
+			txtAsiakasID5.setText(m_lasku.getAsiakasId() + "");
+			txtNimi5.setText(m_lasku.getNimi());
+			txtLahiosoite5.setText(m_lasku.getLahiosoite());
+			txtPostitoimipaikka5.setText(m_lasku.getPostitoimipaikka());
+			txtPostinro5.setText(m_lasku.getPostinro());
+			txtSumma5.setText(m_lasku.getSumma() + "");
+			txtAlv5.setText(m_lasku.getAlv() + "");
+			JOptionPane.showMessageDialog(null, "Varaus on jo olemassa.", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+			// asetetaan tiedot oliolle
+			m_lasku.setLaskuId(Integer.parseInt(txtLaskuID5.getText()));
+			m_lasku.setVarausId(Integer.parseInt(txtVarausID5.getText()));
+			m_lasku.setAsiakasId(Integer.parseInt(txtAsiakasID5.getText()));
+			m_lasku.setNimi(txtNimi5.getText());
+			m_lasku.setLahiosoite(txtLahiosoite5.getText());
+			m_lasku.setPostitoimipaikka(txtPostitoimipaikka5.getText());
+			m_lasku.setPostinro(txtPostinro5.getText());
+			m_lasku.setSumma(Double.parseDouble(txtSumma5.getText()));
+			m_lasku.setAlv(Double.parseDouble(txtAlv5.getText()));
+			try {
+				// yritetään kirjoittaa kantaan
+				m_lasku.lisaaLasku (conn);
+                lasku_lisatty = true;
+			} catch (SQLException se) {
+			// SQL virheet
+				JOptionPane.showMessageDialog(null, "Laskun lisaaminen ei onnistu. GUI" + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+			//	 se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				JOptionPane.showMessageDialog(null, "Laskun lisaaminen ei onnistu. GUI", "Virhe", JOptionPane.ERROR_MESSAGE);
+			//	 e.printStackTrace();
+			}finally {
+				if (lasku_lisatty == true)
+					JOptionPane.showMessageDialog(null, "Laskun tiedot lisatty tietokantaan.");
+			}		
+		}		
+    }
+
+    public void hae_lasku() {
+		// haetaan tietokannasta laskua, jonka lasku_id = txtLaskuID5
+		m_lasku = null;
+		
+		try {
+			m_lasku = Lasku.haeLasku (conn, Integer.parseInt(txtLaskuID5.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Laskua ei loydy." + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Laskua ei loydy." + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_lasku.getLaskuId() == 0) {
+		// muut virheet
+		txtLaskuID5.setText("");
+		txtVarausID5.setText("");
+		txtAsiakasID5.setText("");
+		txtNimi5.setText("");
+		txtLahiosoite5.setText("");
+		txtPostitoimipaikka5.setText("");
+		txtPostinro5.setText("");
+		txtSumma5.setText("");
+		txtAlv5.setText("");
+			JOptionPane.showMessageDialog(null, "Laskua ei loydy.", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+			// naytetaan tiedot
+			txtLaskuID5.setText(m_lasku.getLaskuId() + "");
+			txtVarausID5.setText(m_lasku.getVarausId() + "");
+			txtAsiakasID5.setText(m_lasku.getAsiakasId() + "");
+			txtNimi5.setText(m_lasku.getNimi());
+			txtLahiosoite5.setText(m_lasku.getLahiosoite());
+			txtPostitoimipaikka5.setText(m_lasku.getPostitoimipaikka());
+			txtPostinro5.setText(m_lasku.getPostinro());
+			txtSumma5.setText(m_lasku.getSumma() + "");
+			txtAlv5.setText(m_lasku.getAlv() + "");
+		}
+		
+    }
+    
+    public void muuta_lasku() {
+		//System.out.println("Muutetaan...");
+			boolean lasku_muutettu = true;
+		// asetetaan tiedot oliolle
+		m_lasku.setLaskuId(Integer.parseInt(txtLaskuID5.getText()));
+		m_lasku.setVarausId(Integer.parseInt(txtVarausID5.getText()));
+		m_lasku.setAsiakasId(Integer.parseInt(txtAsiakasID5.getText()));
+		m_lasku.setNimi(txtNimi5.getText());
+		m_lasku.setLahiosoite(txtLahiosoite5.getText());
+		m_lasku.setPostitoimipaikka(txtPostitoimipaikka5.getText());
+		m_lasku.setPostinro(txtPostinro5.getText());
+		m_lasku.setSumma(Double.parseDouble(txtSumma5.getText()));
+		m_lasku.setAlv(Double.parseDouble(txtAlv5.getText()));
+			
+			try {
+				// yritetään muuttaa (UPDATE) tiedot kantaan
+				m_lasku.muutaLasku (conn);
+			} catch (SQLException se) {
+			// SQL virheet
+				lasku_muutettu = false;
+				JOptionPane.showMessageDialog(null, "Laskun tietojen muuttaminen ei onnistu.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				 //se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				lasku_muutettu = false;
+				JOptionPane.showMessageDialog(null, "Laskun tietojen muuttaminen ei onnistu.", "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (lasku_muutettu == true)
+					JOptionPane.showMessageDialog(null, "Laskun tiedot muutettu.");
+			}
+		
+	}
+    
+    public void poista_lasku() {
+		// haetaan tietokannasta laskua, jonka lasku_id = txtLaskuID5 
+		m_varaus = null; 
+        boolean lasku_poistettu = false;
+		
+		try {
+			m_lasku = Lasku.haeLasku (conn, Integer.parseInt(txtLaskuID5.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Laskua ei loydy.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Laskua ei loydy.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_lasku.getLaskuId() == 0) {
+		// poistettavaa laskua ei löydy tietokannasta, tyhjennetään tiedot näytöltä
+			txtLaskuID5.setText("");
+			txtVarausID5.setText("");
+			txtAsiakasID5.setText("");
+			txtNimi5.setText("");
+			txtLahiosoite5.setText("");
+			txtPostitoimipaikka5.setText("");
+			txtPostinro5.setText("");
+			txtSumma5.setText("");
+			txtAlv5.setText("");
+			JOptionPane.showMessageDialog(null, "Laskua ei loydy.", "Virhe", JOptionPane.ERROR_MESSAGE);
+			return; // poistutaan
+		}
+		else
+		{
+			// naytetaan poistettavan asiakkaan tiedot
+			txtLaskuID5.setText(m_lasku.getLaskuId() + "");
+			txtVarausID5.setText(m_lasku.getVarausId() + "");
+			txtAsiakasID5.setText(m_lasku.getAsiakasId() + "");
+			txtNimi5.setText(m_lasku.getNimi());
+			txtLahiosoite5.setText(m_lasku.getLahiosoite());
+			txtPostitoimipaikka5.setText(m_lasku.getPostitoimipaikka());
+			txtPostinro5.setText(m_lasku.getPostinro());
+			txtSumma5.setText(m_lasku.getSumma() + "");
+			txtAlv5.setText(m_lasku.getAlv() + "");
+			
+		}
+		try {
+			if (JOptionPane.showConfirmDialog(null, "Haluatko todella poistaa laskun?")==0) {// vahvistus ikkunassa
+				m_lasku.poistaLasku (conn);
+				lasku_poistettu = true;
+			}
+			} catch (SQLException se) {
+			// SQL virheet
+				JOptionPane.showMessageDialog(null, "Laskun tietojen poistaminen ei onnistu.", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				// se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				JOptionPane.showMessageDialog(null, "Laskun tietojen poistaminen ei onnistu.", "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (lasku_poistettu == true) { // ainoastaan, jos vahvistettiin ja poisto onnistui
+					txtLaskuID5.setText("");
+					txtVarausID5.setText("");
+					txtAsiakasID5.setText("");
+					txtNimi5.setText("");
+					txtLahiosoite5.setText("");
+					txtPostitoimipaikka5.setText("");
+					txtPostinro5.setText("");
+					txtSumma5.setText("");
+					txtAlv5.setText("");
+					JOptionPane.showMessageDialog(null, "Laskun tiedot poistettu tietokannasta.");
+					m_lasku = null;
 				}
 			}
 			
