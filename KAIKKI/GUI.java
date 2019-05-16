@@ -1535,7 +1535,7 @@ public class GUI extends JFrame {
 	}
 
 
-
+// pate is gay
 	public  void lisaa_vpalvelu() {
 		// lisätään tietokantaan palvelu
 		boolean vpalvelu_lisatty = true;
