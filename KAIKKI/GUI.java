@@ -9,7 +9,8 @@ public class GUI extends JFrame {
     private Asiakas m_asiakas = new Asiakas();
     private Toimipiste m_toimipiste = new Toimipiste();
     private Palvelu m_palvelu = new Palvelu();
-    private Varaus m_varaus = new Varaus();
+	private Varaus m_varaus = new Varaus();
+	private VarauksenPalvelut m_vpalvelu = new VarauksenPalvelut();
     //GUI container
     private JPanel pnlContainer;
 
@@ -163,6 +164,7 @@ public class GUI extends JFrame {
 
 	private JButton btnLisaa6;
 	private JButton btnPoista6;
+	private JButton btnMuuta6;
 
     public GUI(){
         JFrame frame = new JFrame();
@@ -318,6 +320,7 @@ public class GUI extends JFrame {
 
 		btnLisaa6 = new JButton("Lisaa");
 		btnPoista6 = new JButton("Poista");
+		btnMuuta6 = new JButton("Muuta");
 
         frame.add(pnlMain);
 
@@ -460,6 +463,7 @@ public class GUI extends JFrame {
 		pnl6.add(btnPoista6);
 		pnl6.add(lblLkm6);
 		pnl6.add(txtLkm6);
+		pnl6.add(btnMuuta6);
 		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
 		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
 		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
@@ -650,7 +654,31 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 
             }
-        });
+		});
+		
+		btnLisaa6.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                lisaa_vpalvelu();
+            }
+		});
+
+		btnMuuta6.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				muuta_vpalvelu();
+			}
+		});
+		
+		btnPoista6.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                poista_vpalvelu();
+            }
+		});
 
         btnExit.addActionListener(new ActionListener(){
     
@@ -951,12 +979,12 @@ public class GUI extends JFrame {
 			} catch (SQLException se) {
 			// SQL virheet
 				toimipiste_lisatty = false;
-				JOptionPane.showMessageDialog(null, "Toimipisteen lisaaminen ei onnistu", "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Toimipisteen lisaaminen ei onnistu" + se,  "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
 			//	 se.printStackTrace();
 			} catch (Exception e) {
 			// muut virheet
 				toimipiste_lisatty = false;
-				JOptionPane.showMessageDialog(null, "Toimipisteen lisaaminen ei onnistu.", "Virhe", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Toimipisteen lisaaminen ei onnistu." + e, "Virhe", JOptionPane.ERROR_MESSAGE);
 			//	 e.printStackTrace();
 			}finally {
 				if (toimipiste_lisatty == true)
@@ -1456,6 +1484,136 @@ public class GUI extends JFrame {
 			
 		
 	}
+
+	public  void lisaa_vpalvelu() {
+		// lisätään tietokantaan palvelu
+		boolean vpalvelu_lisatty = true;
+		m_vpalvelu = null;
+		try {
+			m_vpalvelu = VarauksenPalvelut.haeVarauksenPalvelu (conn, Integer.parseInt(txtVarausID6.getText()), Integer.parseInt(txtPalveluID6.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			vpalvelu_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe. " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+            vpalvelu_lisatty = false;
+			JOptionPane.showMessageDialog(null, "Tietokantavirhe. "+ e, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_vpalvelu.getVarausId() != 0 && m_vpalvelu.getPalveluId() != 0) {
+		// palvelu jo olemassa, näytetään tiedot
+			vpalvelu_lisatty = false;
+			txtVarausID6.setText(m_vpalvelu.getVarausId() + "");
+			txtPalveluID6.setText(m_vpalvelu.getPalveluId() + "");
+			txtLkm6.setText(m_vpalvelu.getLukumaara() + "");
+			JOptionPane.showMessageDialog(null, "Varauksen palvelut on jo olemassa.", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+			// asetetaan tiedot oliolle
+			m_vpalvelu.setVarausId(Integer.parseInt(txtVarausID6.getText()));
+			m_vpalvelu.setPalveluId(Integer.parseInt(txtPalveluID6.getText()));
+			m_vpalvelu.setLukumaara(Integer.parseInt(txtLkm6.getText()));
+			try {
+				// yritetään kirjoittaa kantaan
+				m_vpalvelu.lisaaVarauksenPalvelu (conn);
+			} catch (SQLException se) {
+			// SQL virheet
+				vpalvelu_lisatty = false;
+				JOptionPane.showMessageDialog(null, "Varauksen palvelun lisaaminen ei onnistu " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+			//	 se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+                vpalvelu_lisatty = false;
+				JOptionPane.showMessageDialog(null, "Varauksen palvelun lisaaminen ei onnistu. " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+			//	 e.printStackTrace();
+			}finally {
+				if (vpalvelu_lisatty == true)
+					JOptionPane.showMessageDialog(null, "Varauksen palvelun tiedot lisatty tietokantaan.");
+			}
+		
+		}
+		
+	}
+	
+	public  void poista_vpalvelu() {
+		// haetaan tietokannasta palvelua, jonka palvelu_id = txtPalveluID3 
+		m_vpalvelu = null;
+		boolean vpalvelu_poistettu = false;
+		
+		try {
+			m_vpalvelu = VarauksenPalvelut.haeVarauksenPalvelu(conn, Integer.parseInt(txtVarausID6.getText()), Integer.parseInt(txtPalveluID6.getText()));
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Varauksen palvelua ei loydy. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Varauksen palvelua ei loydy. GUI " + e, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_vpalvelu.getVarausId() == 0 && m_vpalvelu.getPalveluId() == 0) {
+        // poistettavaa palvelua ei löydy tietokannasta, tyhjennetään tiedot näytöltä
+			txtVarausID6.setText("");
+			txtPalveluID6.setText("");
+            txtLkm6.setText("");
+			JOptionPane.showMessageDialog(null, "Varauksen palvelua ei loydy. GUI", "Virhe", JOptionPane.ERROR_MESSAGE);
+			return; // poistutaan
+		}
+		else
+		{
+			// naytetaan poistettavan opintosuorituksen tiedot
+			m_vpalvelu.setVarausId(Integer.parseInt(txtVarausID6.getText()));
+			m_vpalvelu.setPalveluId(Integer.parseInt(txtPalveluID6.getText()));
+            m_vpalvelu.setLukumaara(Integer.parseInt(txtLkm6.getText()));
+		}
+		try {
+			if (JOptionPane.showConfirmDialog(null, "Haluatko todella poistaa varauksen palvelun?")==0) {// vahvistus ikkunassa
+				m_vpalvelu.poistaVarauksenPalvelu(conn);
+				vpalvelu_poistettu = true;
+			}
+			} catch (SQLException se) {
+			// SQL virheet
+				JOptionPane.showMessageDialog(null, "Varauksen palvelun tietojen poistaminen ei onnistu. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				// se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				JOptionPane.showMessageDialog(null, "Varauksen palvelun tietojen poistaminen ei onnistu. GUI " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (vpalvelu_poistettu == true) { // ainoastaan, jos vahvistettiin ja poisto onnistui
+					txtVarausID6.setText("");
+					txtPalveluID6.setText("");
+                    txtLkm6.setText("");
+					JOptionPane.showMessageDialog(null, "Varauksen palvelun tiedot poistettu tietokannasta.");
+				}
+			}
+			
+		
+	}
+
+	public  void muuta_vpalvelu() {
+		//System.out.println("Muutetaan...");
+			boolean vpalvelu_muutettu = false;
+		// asetetaan tiedot oliolle
+		m_vpalvelu.setLukumaara(Integer.parseInt(txtLkm6.getText()));
+			
+			try {
+				// yritetään muuttaa (UPDATE) tiedot kantaan
+				m_vpalvelu.muutaVarauksenPalvelu(conn);
+				vpalvelu_muutettu = true;
+			} catch (SQLException se) {
+			// SQL virheet
+				JOptionPane.showMessageDialog(null, "Varauksen palvelun tietojen muuttaminen ei onnistu. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+				 //se.printStackTrace();
+			} catch (Exception e) {
+			// muut virheet
+				JOptionPane.showMessageDialog(null, "Varauksen palvelun tietojen muuttaminen ei onnistu. GUI " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+				// e.printStackTrace();
+			} finally {
+				if (vpalvelu_muutettu == true)
+					JOptionPane.showMessageDialog(null, "Varauksen palvelun tiedot muutettu.");
+			}
+		
+    }
 
 
 
