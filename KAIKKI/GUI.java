@@ -165,6 +165,7 @@ public class GUI extends JFrame {
 	private JButton btnLisaa6;
 	private JButton btnPoista6;
 	private JButton btnMuuta6;
+	private JButton btnHae6;
 
     public GUI(){
         JFrame frame = new JFrame();
@@ -321,6 +322,7 @@ public class GUI extends JFrame {
 		btnLisaa6 = new JButton("Lisaa");
 		btnPoista6 = new JButton("Poista");
 		btnMuuta6 = new JButton("Muuta");
+		btnHae6 = new JButton("Hae");
 
         frame.add(pnlMain);
 
@@ -391,10 +393,10 @@ public class GUI extends JFrame {
         pnl3.add(btnMuuta3);
         pnl3.add(lblNimi3);
         pnl3.add(txtNimi3);
-        pnl3.add(btnHae3);
+		pnl3.add(btnPoista3);
         pnl3.add(lblTyyppi3);
         pnl3.add(txtTyyppi3);
-        pnl3.add(btnPoista3);
+        pnl3.add(btnHae3);
         pnl3.add(lblKuvaus3);
         pnl3.add(txtKuvaus3);
         pnl3.add(Box.createRigidArea(new Dimension(100,10)));
@@ -413,10 +415,10 @@ public class GUI extends JFrame {
         pnl4.add(btnMuuta4);
         pnl4.add(lblToimipisteID4);
         pnl4.add(txtToimipisteID4);
-        pnl4.add(btnHae4);
+        pnl4.add(btnPoista4);
         pnl4.add(lblVarauspvm4);
         pnl4.add(txtVarauspvm4);
-        pnl4.add(btnPoista4);
+		pnl4.add(btnHae4);
         pnl4.add(lblVahvistuspvm4);
         pnl4.add(txtVahvistuspvm4);
         pnl4.add(Box.createRigidArea(new Dimension(100,10)));
@@ -435,10 +437,11 @@ public class GUI extends JFrame {
         pnl5.add(btnMuuta5);
         pnl5.add(lblAsiakasID5);
         pnl5.add(txtAsiakasID5);
-        pnl5.add(btnHae5);
+		pnl5.add(btnPoista5);
+		pnl5.add(btnHae5);
         pnl5.add(lblNimi5);
-        pnl5.add(txtNimi5);
-        pnl5.add(btnPoista5);
+		pnl5.add(txtNimi5);
+		pnl5.add(btnHae5);
         pnl5.add(lblLahiosoite5);
         pnl5.add(txtLahiosoite5);
         pnl5.add(Box.createRigidArea(new Dimension(100,10)));
@@ -464,6 +467,9 @@ public class GUI extends JFrame {
 		pnl6.add(lblLkm6);
 		pnl6.add(txtLkm6);
 		pnl6.add(btnMuuta6);
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(btnHae6);
 		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
 		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
 		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
@@ -655,6 +661,14 @@ public class GUI extends JFrame {
                 
             }
 		});
+
+		btnHae6.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hae_vpalvelu();
+            }
+        });
 		
 		btnLisaa6.addActionListener(new ActionListener() {
 
@@ -1484,6 +1498,43 @@ public class GUI extends JFrame {
 			
 		
 	}
+
+
+	//varauksen palvelut
+	
+	public  void hae_vpalvelu() {
+		// haetaan tietokannasta pavlelua, jonka palvelu_id = txtPalveluID3
+		m_vpalvelu = null;
+		
+		try {
+			m_vpalvelu = VarauksenPalvelut.haeVarauksenPalvelu(conn, Integer.parseInt(txtVarausID6.getText()), Integer.parseInt(txtPalveluID6.getText()));
+
+		} catch (SQLException se) {
+		// SQL virheet
+			JOptionPane.showMessageDialog(null, "Varauksen palvelua ei loydy. GUI " + se, "Tietokantavirhe", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+		// muut virheet
+			JOptionPane.showMessageDialog(null, "Varauksen palvelua ei loydy. GUI " + e, "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		if (m_vpalvelu.getVarausId() == 0) {
+		// muut virheet
+			txtVarausID6.setText("");
+            txtPalveluID6.setText("");
+			txtLkm6.setText("");
+			JOptionPane.showMessageDialog(null, "Varauksen palvelua ei loydy. GUI", "Virhe", JOptionPane.ERROR_MESSAGE);
+		}
+		else
+		{
+            // naytetaan tiedot
+            
+			txtVarausID6.setText(m_vpalvelu.getVarausId() + "");
+			txtPalveluID6.setText(m_vpalvelu.getPalveluId() + "");
+            txtLkm6.setText(m_vpalvelu.getLukumaara() + "");
+		}
+		
+	}
+
+
 
 	public  void lisaa_vpalvelu() {
 		// lisätään tietokantaan palvelu

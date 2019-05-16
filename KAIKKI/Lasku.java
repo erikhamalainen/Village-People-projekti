@@ -75,13 +75,13 @@ public class Lasku {
 	}
     @Override
     public String toString(){
-        return (m_asiakas_id + " " + m_etunimi + " " + m_sukunimi);
+        return (lasku_id + " " + varaus_id + " " + asiakas_id);
     }
 	/*
 	Haetaan asiakkaan tiedot ja palautetaan laskuolion kutsujalle.
 	Staattinen metodi, ei vaadi fyysisen olion olemassaoloa.
 	*/
-	public static Lasku haeLasku (Connection connection, int id) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
+	public static Lasku haeLasku (Connection connection, int laid) throws SQLException, Exception { // tietokantayhteys välitetään parametrina
 		// haetaan tietokannasta asiakasta, jonka lasku_id = id 
 		String sql = "SELECT lasku_id, varaus_id, asiakas_id, nimi, lahiosoite, postitoimipaikka, postinro, summa, alv " 
 					+ " FROM Lasku WHERE lasku_id = ?"; // ehdon arvo asetetaan jäljempänä
@@ -90,7 +90,7 @@ public class Lasku {
 		try {
 			// luo PreparedStatement-olio sql-lauseelle
 			lause = connection.prepareStatement(sql);
-			lause.setInt( 1, id); // asetetaan where ehtoon (?) arvo
+			lause.setInt( 1, laid); // asetetaan where ehtoon (?) arvo
 			// suorita sql-lause
 			tulosjoukko = lause.executeQuery();	
 			if (tulosjoukko == null) {
