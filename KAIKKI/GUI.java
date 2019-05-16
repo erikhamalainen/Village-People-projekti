@@ -150,7 +150,19 @@ public class GUI extends JFrame {
     private JButton btnLisaa5;
     private JButton btnMuuta5;
     private JButton btnHae5;
-    private JButton btnPoista5;              
+	private JButton btnPoista5;
+	
+	//GUI varauksen_palvelut
+	private JLabel lblVarausID6;
+	private JLabel lblPalveluID6;
+	private JLabel lblLkm6;
+
+	private JTextField txtVarausID6;
+	private JTextField txtPalveluID6;
+	private JTextField txtLkm6;
+
+	private JButton btnLisaa6;
+	private JButton btnPoista6;
 
     public GUI(){
         JFrame frame = new JFrame();
@@ -293,8 +305,19 @@ public class GUI extends JFrame {
         btnLisaa5 = new JButton("Lisaa");
         btnMuuta5 = new JButton("Muuta");
         btnHae5 = new JButton("Hae");
-        btnPoista5 = new JButton("Poista");
+		btnPoista5 = new JButton("Poista");
+		
+		//varauksen_palvelut
+		lblVarausID6 = new JLabel("Varaus id");
+		lblPalveluID6 = new JLabel("Palvelu id");
+		lblLkm6 = new JLabel("Lukumaara");
 
+		txtVarausID6 = new JTextField(25);
+		txtPalveluID6 = new JTextField(25);
+		txtLkm6 = new JTextField(25);
+
+		btnLisaa6 = new JButton("Lisaa");
+		btnPoista6 = new JButton("Poista");
 
         frame.add(pnlMain);
 
@@ -426,9 +449,30 @@ public class GUI extends JFrame {
         pnl5.add(txtSumma5);
         pnl5.add(Box.createRigidArea(new Dimension(100,10)));
         pnl5.add(lblAlv5);
-        pnl5.add(txtAlv5);
+		pnl5.add(txtAlv5);
+		
+		pnl6.setLayout(new GridLayout(8, 3));
+		pnl6.add(lblVarausID6);
+		pnl6.add(txtVarausID6);
+		pnl6.add(btnLisaa6);
+		pnl6.add(lblPalveluID6);
+		pnl6.add(txtPalveluID6);
+		pnl6.add(btnPoista6);
+		pnl6.add(lblLkm6);
+		pnl6.add(txtLkm6);
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
+		pnl6.add(Box.createRigidArea(new Dimension(100,10)));
 
-        pnl7.add(btnExit);
+        pnl8.add(btnExit);
 
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
         frame.setUndecorated(true);
